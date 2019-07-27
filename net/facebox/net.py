@@ -59,27 +59,6 @@ def facebox_arg_scope(weight_decay=0.00001,
       with slim.arg_scope([slim.max_pool2d], padding='SAME') as arg_sc:
         return arg_sc
 
-def residual_dense(x):
-    depth_in = x.shape[3]
-    shortcut = slim.conv2d(x, depth_in//2, [1, 1], stride=1, activation_fn=tf.nn.relu, scope='shortcut')
-
-    residual = slim.conv2d(x, depth_in//2, [3, 3], stride=1, activation_fn=tf.nn.relu, scope='init_conv2_1')
-    residual = slim.conv2d(residual, depth_in//2, [3, 3], stride=1, activation_fn=tf.nn.relu, scope='init_conv2_2')
-
-    x = tf.concat([shortcut, residual], axis=3)
-    return x
-
-def halo_resisual(x,out_channels,scope):
-
-    with tf.variable_scope(scope):
-        with tf.variable_scope('first_branch'):
-            x1 = slim.conv2d(x, out_channels//2, [3, 3], stride=2, activation_fn=None, scope='_conv_1_1')
-        with tf.variable_scope('second_branch'):
-            x2 = slim.conv2d(x, out_channels // 2, [3, 3], stride=1, activation_fn=tf.nn.relu, scope='_conv_2_1')
-            x2 = slim.conv2d(x2, out_channels//2, [3, 3], stride=2, activation_fn=None, scope='_conv_2_2')
-    residual_unit = x1 + x2
-    x = slim.batch_norm(residual_unit, activation_fn=tf.nn.relu, scope='act')
-    return x
 
 def halo(x,out_channels,scope):
 
@@ -97,64 +76,41 @@ def block(x,num_units,out_channels,scope):
     with tf.variable_scope(scope):
         x=halo(x,out_channels,scope)
 
-        for i in range(num_units-1):
-            with tf.variable_scope('residul_%d'%i):
-                x=residual_dense(x)
     return x
 def inception_block(net_in,scope):
 
     net_1 = slim.conv2d(net_in, 32, [1, 1], stride=1, activation_fn=tf.nn.relu,
                       normalizer_fn=slim.batch_norm, scope='%s_branch1_conv1x1'%scope)
 
-    net_2 = tf.nn.max_pool(net_in, ksize=[1, 3, 3, 1], strides=[1, 1, 1, 1], padding="SAME", name='%s_branch2_pool1'%scope)
-    net_2 = slim.conv2d(net_2, 32, [1, 1], stride=1, activation_fn=tf.nn.relu,
-                      normalizer_fn=slim.batch_norm, scope='%s_branch2_conv1x1'%scope)
+    net_2 = slim.conv2d(net_in, 32, [3, 3], stride=1, activation_fn=tf.nn.relu,
+                                normalizer_fn=slim.batch_norm, scope='%s_branch2_conv3x3'%scope)
 
-    net_3 = slim.conv2d(net_in, 24, [1, 1], stride=1, activation_fn=tf.nn.relu,
-                        normalizer_fn=slim.batch_norm, scope='%s_branch3_conv1x1' % scope)
-    net_3 = slim.separable_conv2d(net_3, 32, [3, 3], stride=1, activation_fn=tf.nn.relu,
-                                normalizer_fn=slim.batch_norm, scope='%s_branch3_conv3x3'%scope,
-                                depth_multiplier=1)
+    net_3 = slim.conv2d(net_in, 32, [5, 5], stride=1, activation_fn=tf.nn.relu,
+                                  normalizer_fn=slim.batch_norm, scope='%s_branch3_conv3x3_1' % scope)
 
-    # net_3 = slim.conv2d(net_3, 32, [3, 3], stride=1, activation_fn=tf.nn.relu,
-    #                   normalizer_fn=slim.batch_norm, scope='%s_branch3_conv3x3'%scope)
-
-    net_4 = slim.conv2d(net_in, 24, [1, 1], stride=1, activation_fn=tf.nn.relu,
-                        normalizer_fn=slim.batch_norm, scope='%s_branch4_conv1x1' % scope)
-    net_4 = slim.separable_conv2d(net_4, 32, [3, 3], stride=1, activation_fn=tf.nn.relu,
-                                  normalizer_fn=slim.batch_norm, scope='%s_branch4_conv3x3_1' % scope,
-                                  depth_multiplier=1)
-    net_4 = slim.separable_conv2d(net_4, 32, [3, 3], stride=1, activation_fn=tf.nn.relu,
-                                  normalizer_fn=slim.batch_norm, scope='%s_branch4_conv3x3_2' % scope,
-                                  depth_multiplier=1)
-    # net_4 = slim.conv2d(net_4, 32, [3, 3], stride=1, activation_fn=tf.nn.relu,
-    #                     normalizer_fn=slim.batch_norm, scope='%s_branch4_conv3x3_1' % scope)
-    # net_4 = slim.conv2d(net_4, 32, [3, 3], stride=1, activation_fn=tf.nn.relu,
-    #                     normalizer_fn=slim.batch_norm, scope='%s_branch4_conv3x3_2' % scope)
-
-    net_out=tf.concat([net_1,net_2,net_3,net_4],axis=3)
+    net_out=tf.concat([net_1,net_2,net_3],axis=3)
 
     return net_out
 
-def RDCL_SEP(net_in):
+def RDCL(net_in):
     with tf.name_scope('RDCL'):
-        net = slim.conv2d(net_in, 24, [7, 7], stride=2, activation_fn=tf.nn.crelu,
-                          normalizer_fn=slim.batch_norm, scope='init_conv')
-        net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool')
-        net = slim.conv2d(net, 48, [3, 3], stride=2, activation_fn=tf.nn.crelu,
-                        normalizer_fn=slim.batch_norm, scope='conv1x1_before')
-        net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool2')
+        net = slim.conv2d(net_in, 24, [7, 7], stride=4, scope='init_conv')
+        net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool')
+        net = slim.conv2d(net, 48, [5, 5], stride=2, scope='conv1x1_before')
+        net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool2')
         return net
 
-def MSCL(net_in):
+def MSCL(net):
 
     with tf.name_scope('MSCL'):
         feature_maps = []
-        net=inception_block(net_in,'inception1')
+        net = inception_block(net,'inception1')
         net = inception_block(net, 'inception2')
         net = inception_block(net, 'inception3')
+
+
         feature_maps.append(net)
-        net=block(net, num_units=2, out_channels=256, scope='Stage1')
+        net = block(net, num_units=2, out_channels=256, scope='Stage1')
         feature_maps.append(net)
         net = block(net, num_units=2,  out_channels=256, scope='Stage2')
         feature_maps.append(net)
@@ -234,10 +190,9 @@ def facebox_backbone(inputs,L2_reg,training=True):
     with slim.arg_scope(arg_scope):
         with slim.arg_scope([slim.batch_norm], is_training=training):
             with tf.name_scope('Facebox'):
-                net=RDCL_SEP(inputs)
-
-
+                net=RDCL(inputs)
                 feature_maps=MSCL(net)
+
                 reg,cla =output(feature_maps)
 
     return reg,cla
@@ -274,11 +229,7 @@ def facebox(inputs, reg_targets, matches, L2_reg, training):
 
 
     ######add nms in the graph
-    get_predictions(loc_predict,cla_predict,anchors=cfg.MODEL.anchors,
-                    score_threshold=cfg.PREDICTION.score_threshold,
-                    iou_threshold=cfg.PREDICTION.iou_threshold,
-                    max_boxes=cfg.PREDICTION.max_boxes)
-
+    get_predictions(loc_predict,cla_predict,anchors=cfg.MODEL.anchors)
 
     reg_loss = tf.reduce_sum(location_losses) / normalizer
     cla_loss = tf.reduce_sum(cls_losses) / normalizer

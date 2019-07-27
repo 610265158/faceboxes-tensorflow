@@ -11,7 +11,7 @@ import tensorflow as tf
 
 from api.face_detector import FaceDetector
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 ap = argparse.ArgumentParser()

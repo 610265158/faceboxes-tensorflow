@@ -179,11 +179,11 @@ class trainner():
     def make_data(self, ds,is_training=True):
 
         if is_training:
-            ds = MultiThreadMapData(ds, 1, self.train_map_func, buffer_size=100, strict=True)
+            ds = MultiThreadMapData(ds, 5, self.train_map_func, buffer_size=50, strict=True)
         else:
-            ds = MultiThreadMapData(ds, 1, self.val_map_func, buffer_size=100, strict=True)
+            ds = MultiThreadMapData(ds, 5, self.val_map_func, buffer_size=50, strict=True)
         ds = BatchData(ds, cfg.TRAIN.num_gpu * cfg.TRAIN.batch_size, remainder=True,use_list=False)
-        ds = MultiProcessPrefetchData(ds, 100,2)
+        ds = MultiProcessPrefetchData(ds, 50,2)
         ds.reset_state()
         ds=ds.get_data()
 

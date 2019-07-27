@@ -16,7 +16,7 @@ class FaceDetector:
         self._sess = tf.Session(graph=self._graph)
 
         with self._graph.as_default():
-            self._graph, self._sess = self.init_model(model_path)
+            self._graph, self._sess = self.init_model(*model_path)
 
             self.input_image = tf.get_default_graph().get_tensor_by_name('tower_0/images:0')
             self.training = tf.get_default_graph().get_tensor_by_name('training_flag:0')
