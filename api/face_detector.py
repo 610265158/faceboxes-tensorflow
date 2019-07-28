@@ -53,7 +53,7 @@ class FaceDetector:
         boxes, scores, num_boxes = self._sess.run(
             self.output_ops, feed_dict={self.input_image: image_fornet,self.training:False}
         )
-        print('facebox detect cost', time.time() - start)
+        #print('facebox detect cost', time.time() - start)
         num_boxes = num_boxes[0]
         boxes = boxes[0][:num_boxes]
 

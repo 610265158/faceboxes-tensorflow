@@ -5,7 +5,7 @@ import numpy as np
 from api.face_detector import FaceDetector
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-detector = FaceDetector('./model/detector.pb')
+detector = FaceDetector(['./model/detector.pb'])
 
 import os
 def GetFileList(dir, fileList):
@@ -40,7 +40,7 @@ def facedetect():
 
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         star=time.time()
-        boxes=detector(img,0.5)
+        boxes=detector(img,0.3)
         #print('one iamge cost %f s'%(time.time()-star))
         #print(boxes.shape)
         #print(boxes)

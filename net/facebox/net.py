@@ -77,26 +77,28 @@ def block(x,num_units,out_channels,scope):
         x=halo(x,out_channels,scope)
 
     return x
-def inception_block(net_in,scope):
-
-    net_1 = slim.conv2d(net_in, 32, [1, 1], stride=1, activation_fn=tf.nn.relu,
-                      normalizer_fn=slim.batch_norm, scope='%s_branch1_conv1x1'%scope)
-
-    net_2 = slim.conv2d(net_in, 32, [3, 3], stride=1, activation_fn=tf.nn.relu,
-                                normalizer_fn=slim.batch_norm, scope='%s_branch2_conv3x3'%scope)
-
-    net_3 = slim.conv2d(net_in, 32, [5, 5], stride=1, activation_fn=tf.nn.relu,
-                                  normalizer_fn=slim.batch_norm, scope='%s_branch3_conv3x3_1' % scope)
-
-    net_out=tf.concat([net_1,net_2,net_3],axis=3)
+def inception_block(x,scope):
+    # path 1
+    x1 = slim.conv2d(x, 32, (1, 1), scope=scope + '/conv_1x1_path1')
+    # path 2
+    y = slim.max_pool2d(x, (3, 3), stride=1, padding='SAME', scope=scope + '/pool_3x3_path2')
+    x2 = slim.conv2d(y, 32, (1, 1), scope=scope + '/conv_1x1_path2')
+    # path 3
+    y = slim.conv2d(x, 24, (1, 1), scope=scope + '/conv_1x1_path3')
+    x3 = slim.conv2d(y, 32, (3, 3), scope=scope + '/conv_3x3_path3')
+    # path 4
+    y = slim.conv2d(x, 24, (1, 1), scope=scope + '/conv_1x1_path4')
+    y = slim.conv2d(y, 32, (3, 3), scope=scope + '/conv_3x3_path4')
+    x4 = slim.conv2d(y, 32, (3, 3), scope=scope + '/conv_3x3_second_path4')
+    return tf.concat([x1, x2, x3, x4], axis=3, name=scope + '/concat')
 
     return net_out
 
 def RDCL(net_in):
     with tf.name_scope('RDCL'):
-        net = slim.conv2d(net_in, 24, [7, 7], stride=4, scope='init_conv')
+        net = slim.conv2d(net_in, 24, [7, 7], stride=2,activation_fn=tf.nn.crelu, scope='init_conv')
         net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool')
-        net = slim.conv2d(net, 48, [5, 5], stride=2, scope='conv1x1_before')
+        net = slim.conv2d(net, 48, [5, 5], stride=2,activation_fn=tf.nn.crelu,scope='conv1x1_before')
         net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool2')
         return net
 
@@ -104,15 +106,17 @@ def MSCL(net):
 
     with tf.name_scope('MSCL'):
         feature_maps = []
-        net = inception_block(net,'inception1')
+        net = inception_block(net, 'inception1')
         net = inception_block(net, 'inception2')
         net = inception_block(net, 'inception3')
 
+        feature_maps.append(net)
+        net = slim.conv2d(net, 128, (1, 1), scope='conv3_1')
+        net = slim.conv2d(net, 256, (3, 3), stride=2, scope='conv3_2')
 
         feature_maps.append(net)
-        net = block(net, num_units=2, out_channels=256, scope='Stage1')
-        feature_maps.append(net)
-        net = block(net, num_units=2,  out_channels=256, scope='Stage2')
+        net = slim.conv2d(net, 128, (1, 1), scope='conv4_1')
+        net = slim.conv2d(net, 256, (3, 3), stride=2, scope='conv4_2')
         feature_maps.append(net)
 
         print("feature_maps shapes:", feature_maps)
@@ -177,11 +181,11 @@ def preprocess( image):
             image = tf.cast(image, tf.float32)
 
         mean = cfg.DATA.PIXEL_MEAN
-        #std = np.asarray(cfg.DATA.PIXEL_STD)
+        std = np.asarray(cfg.DATA.PIXEL_STD)
 
         image_mean = tf.constant(mean, dtype=tf.float32)
-        #image_invstd = tf.constant(1.0 / std, dtype=tf.float32)
-        image = (image - image_mean) # * image_invstd
+        image_invstd = tf.constant(1.0 / std, dtype=tf.float32)
+        image = (image - image_mean)  * image_invstd
 
     return image
 def facebox_backbone(inputs,L2_reg,training=True):
@@ -191,9 +195,9 @@ def facebox_backbone(inputs,L2_reg,training=True):
         with slim.arg_scope([slim.batch_norm], is_training=training):
             with tf.name_scope('Facebox'):
                 net=RDCL(inputs)
-                feature_maps=MSCL(net)
+                fms=MSCL(net)
 
-                reg,cla =output(feature_maps)
+                reg,cla =output(fms)
 
     return reg,cla
 
@@ -242,7 +246,7 @@ def facebox(inputs, reg_targets, matches, L2_reg, training):
 
 
 
-def get_predictions(box_encodings,cla,anchors, score_threshold=0.05, iou_threshold=0.5, max_boxes=100):
+def get_predictions(box_encodings,cla,anchors, score_threshold=0.05, iou_threshold=0.3, max_boxes=500):
     """Postprocess outputs of the network.
 
     Returns:

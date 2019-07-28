@@ -131,6 +131,9 @@ class trainner():
         loc_loss = tf.reduce_sum(loss['localization_loss'])
         cla_loss = tf.reduce_sum(loss['classification_loss'])
 
+
+
+        print(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
         regularization_losses = tf.add_n(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES), name='l2_loss')
 
         return loc_loss,cla_loss,regularization_losses
@@ -179,10 +182,10 @@ class trainner():
     def make_data(self, ds,is_training=True):
 
         if is_training:
-            ds = MultiThreadMapData(ds, 5, self.train_map_func, buffer_size=50, strict=True)
+            ds = MultiThreadMapData(ds, 1, self.train_map_func, buffer_size=50)
         else:
-            ds = MultiThreadMapData(ds, 5, self.val_map_func, buffer_size=50, strict=True)
-        ds = BatchData(ds, cfg.TRAIN.num_gpu * cfg.TRAIN.batch_size, remainder=True,use_list=False)
+            ds = MultiThreadMapData(ds, 1, self.val_map_func, buffer_size=50)
+        ds = BatchData(ds, cfg.TRAIN.num_gpu * cfg.TRAIN.batch_size)
         ds = MultiProcessPrefetchData(ds, 50,2)
         ds.reset_state()
         ds=ds.get_data()
@@ -210,7 +213,6 @@ class trainner():
             # Create an optimizer that performs gradient descent.
             opt, lr, global_step = self.get_opt()
 
-            ##some global placeholder
 
             L2_reg = tf.placeholder(tf.float32, name="L2_reg")
             training = tf.placeholder(tf.bool, name="training_flag")
@@ -218,10 +220,8 @@ class trainner():
             images_place_holder_list = []
             labels_place_holder_list = []
             matches_place_holder_list = []
-            # Create an optimizer that performs gradient descent.
-            # opt = tf.train.AdamOptimizer(lr)
-            opt = tf.train.MomentumOptimizer(lr, momentum=0.9, use_nesterov=False)
-            # Get images and labels
+
+
 
             # Calculate the gradients for each model tower.
             tower_grads = []
@@ -395,7 +395,7 @@ class trainner():
                     # print(example_label.shape)
                     # print(example_matche.shape)
                     cv2.namedWindow('img', 0)
-                    cv2.imshow('img', example_image)
+                    cv2.imshow('img', example_image.astype(np.uint8))
                     cv2.waitKey(0)
 
             fetch_duration = time.time() - start_time
