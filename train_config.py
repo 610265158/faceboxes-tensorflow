@@ -16,7 +16,7 @@ config.TRAIN.buffer_size = 50
 config.TRAIN.prefetch_size = 100
 ############
 
-config.TRAIN.batch_size = 16
+config.TRAIN.batch_size = 32
 config.TRAIN.log_interval = 10
 config.TRAIN.epoch = 200
 config.TRAIN.train_set_size=16098  ###########u need be sure
