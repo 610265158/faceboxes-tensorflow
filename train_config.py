@@ -30,9 +30,9 @@ config.TRAIN.vis=False
 
 config.MODEL = edict()
 config.MODEL.model_path = './model/'  # save directory
-config.MODEL.continue_train=True ### revover from a trained model
+config.MODEL.continue_train=False ### revover from a trained model
 config.MODEL.net_structure=None ######'resnet_v1_50,resnet_v1_101,mobilenet
-config.MODEL.pretrained_model='./model/epoch_67L2_0.0005.ckpt'
+config.MODEL.pretrained_model=None
 #####
 config.MODEL.hin = 512  # input size during training , 512
 config.MODEL.win = 512
