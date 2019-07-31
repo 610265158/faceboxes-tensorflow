@@ -1,9 +1,8 @@
-import tensorflow as tf
 import numpy as np
 import sys
 sys.path.append('.')
 try:
-    from net.facebox.utils.box_utils import encode, iou
+    from lib.core.model.facebox.utils.box_utils import encode, iou
 except:
     from utils.box_utils import encode, iou
 

@@ -3,9 +3,9 @@ import tensorflow as tf
 import numpy as np
 
 
-from net.facebox.losses_and_ohem import localization_loss, ohem_loss
-from net.facebox.utils.box_utils import batch_decode
-from net.facebox.utils.nms import batch_non_max_suppression
+from lib.core.model.facebox.losses_and_ohem import localization_loss, ohem_loss
+from lib.core.model.facebox.utils.box_utils import batch_decode
+from lib.core.model.facebox.utils.nms import batch_non_max_suppression
 
 from train_config import config as cfg
 
@@ -81,7 +81,7 @@ def inception_block(x,scope):
     # path 1
     x1 = slim.conv2d(x, 32, (1, 1), scope=scope + '/conv_1x1_path1')
     # path 2
-    y = slim.max_pool2d(x, (3, 3), stride=1, padding='SAME', scope=scope + '/pool_3x3_path2')
+    y = slim.avg_pool2d(x, (3, 3), stride=1, padding='SAME', scope=scope + '/pool_3x3_path2')
     x2 = slim.conv2d(y, 32, (1, 1), scope=scope + '/conv_1x1_path2')
     # path 3
     y = slim.conv2d(x, 24, (1, 1), scope=scope + '/conv_1x1_path3')
@@ -98,7 +98,7 @@ def RDCL(net_in):
     with tf.name_scope('RDCL'):
         net = slim.conv2d(net_in, 24, [7, 7], stride=2,activation_fn=tf.nn.crelu, scope='init_conv')
         net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool')
-        net = slim.conv2d(net, 48, [5, 5], stride=2,activation_fn=tf.nn.crelu,scope='conv1x1_before')
+        net = slim.conv2d(net, 64, [5, 5], stride=2,activation_fn=tf.nn.crelu,scope='conv1x1_before')
         net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool2')
         return net
 
@@ -246,7 +246,7 @@ def facebox(inputs, reg_targets, matches, L2_reg, training):
 
 
 
-def get_predictions(box_encodings,cla,anchors, score_threshold=0.05, iou_threshold=0.3, max_boxes=500):
+def get_predictions(box_encodings,cla,anchors, score_threshold=0.05, iou_threshold=0.3, max_boxes=100):
     """Postprocess outputs of the network.
 
     Returns:

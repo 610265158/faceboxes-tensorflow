@@ -1,9 +1,9 @@
 import sys
 sys.path.append('.')
 import numpy as np
-import tensorflow as tf
+
 try:
-    from net.facebox.utils.box_utils import to_minmax_coordinates
+    from lib.core.model.facebox.utils.box_utils import to_minmax_coordinates
 except:
     from utils.box_utils import to_minmax_coordinates
 ANCHOR_SPECIFICATIONS = [

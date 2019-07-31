@@ -1,5 +1,5 @@
 import tensorflow as tf
-from net.facebox.constants import PARALLEL_ITERATIONS
+from lib.core.model.facebox.constants import PARALLEL_ITERATIONS
 
 
 def batch_non_max_suppression(

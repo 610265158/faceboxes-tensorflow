@@ -6,10 +6,8 @@ import os
 import cv2
 from tqdm import tqdm
 import argparse
-import tensorflow as tf
 
-
-from api.face_detector import FaceDetector
+from lib.core.api import FaceDetector
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
