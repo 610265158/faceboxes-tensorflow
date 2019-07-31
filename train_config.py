@@ -11,9 +11,9 @@ config.TRAIN = edict()
 #### below are params for dataiter
 config.TRAIN.num_gpu = 1
 config.TRAIN.thread_num = 1
-config.TRAIN.process_num = 1
-config.TRAIN.buffer_size = 30
-config.TRAIN.prefetch_size = 30
+config.TRAIN.process_num = 2
+config.TRAIN.buffer_size = 50
+config.TRAIN.prefetch_size = 100
 ############
 
 config.TRAIN.batch_size = 16

@@ -7,7 +7,7 @@ import cv2
 from tqdm import tqdm
 import argparse
 
-from lib.core.api import FaceDetector
+from lib.core.api.face_detector import FaceDetector
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
@@ -25,6 +25,8 @@ IMAGES_DIR = args.data_dir
 ANNOTATIONS_PATH = args.split_dir
 RESULT_DIR = args.result
 
+if not os.access(RESULT_DIR,os.F_OK):
+    os.mkdir(RESULT_DIR)
 # MODEL_PATH = args.model
 # if MODEL_PATH=='':
 #     model_folder = './model'
