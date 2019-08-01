@@ -117,7 +117,7 @@ class FaceBoxesDataIter(BaseDataIter):
     def _map_func(self,dp,is_training):
         fname, annos = dp
         image = cv2.imread(fname, cv2.IMREAD_COLOR)
-
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         labels = annos.split(' ')
         boxes = []
         for label in labels:
