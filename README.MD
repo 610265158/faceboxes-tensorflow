@@ -1,19 +1,13 @@
-# dsfd
+# [faceboxes](https://arxiv.org/abs/1708.05234)
 
 ## introduction
 
-A tensorflow implement faceboxes, and there is something different with the origin paper.
+A tensorflow implement faceboxes, and there maybe something different with the origin paper.
 
 It‘s a ssd-like object detect framework, but slightly different,
-combines lots of tricks for face detection, such as dual-shot, dense anchor match, FPN,FEM and so on.
-
-now it is mainly optimised about face detection,
-and borrows some codes from other repos
 
 ps, the code maybe not that clear, please be patience, and i am still working on it, and forgive me for my poor english :)
 
-
-the evaluation results are based on vgg with batchsize(32),
 pretrained model can be download from
 https://pan.baidu.com/s/1cUqnf9BwUVkCy0iT6EczKA ( password ty4d )
 
@@ -22,7 +16,7 @@ evaluation result on fddb
 
 | fddb   |
 | :------: | 
-|  0.95 | 
+|  0.948 | 
 
 
 
@@ -41,7 +35,7 @@ evaluation result on fddb
 ### train
 1. download widerface data from http://shuoyang1213.me/WIDERFACE/
 and release the WIDER_train, WIDER_val and wider_face_split into ./WIDER, 
-2. download fddb and release alll into ./FDDB
+2. download fddb and release the data into ./FDDB
 3. then run
 ```python prepare_data.py```it will produce train.txt and val.txt
 
@@ -115,6 +109,6 @@ if u get a trained model, run `python tools/auto_freeze.py`, it will read the ch
 `python vis.py`
 
 u can check the code in vis.py to make it runable, it's simple.
-
-
+### reference
+# [FaceBoxes: A CPU Real-time Face Detector with High Accuracy](https://arxiv.org/abs/1708.05234)
 
