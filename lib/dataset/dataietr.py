@@ -12,8 +12,7 @@ from tensorpack.dataflow import DataFromList
 from tensorpack.dataflow import BatchData, MultiThreadMapData, MultiProcessPrefetchData
 
 
-from lib.dataset.augmentor.augmentation import Random_contrast,Random_saturation,\
-    Random_brightness,Random_scale_withbbox,Random_flip, Fill_img,baidu_aug,dsfd_aug
+from lib.dataset.augmentor.augmentation import ColorDistort,Random_scale_withbbox,Random_flip, Fill_img,baidu_aug,dsfd_aug
 from lib.core.model.facebox.training_target_creation import get_training_targets
 from train_config import config as cfg
 
@@ -113,6 +112,12 @@ class BaseDataIter():
 
 
 class FaceBoxesDataIter(BaseDataIter):
+    def __init__(self,img_root_path='',ann_file=None,training_flag=True):
+
+        self.color_augmentor = ColorDistort()
+
+        ###init the base class at last !!
+        super(FaceBoxesDataIter, self).__init__(img_root_path,ann_file,training_flag)
 
     def _map_func(self,dp,is_training):
         fname, annos = dp
@@ -195,26 +200,7 @@ class FaceBoxesDataIter(BaseDataIter):
             # if random.uniform(0, 1) > 0.5:
             #     image = Pixel_jitter(image, max_=15)
             if random.uniform(0, 1) > 0.5:
-                image = Random_brightness(image, 35)
-            if random.uniform(0, 1) > 0.5:
-                image = Random_contrast(image, [0.5, 1.5])
-            if random.uniform(0, 1) > 0.5:
-                image = Random_saturation(image, [0.5, 1.5])
-            # if random.uniform(0, 1) > 0.5:
-            #     a = [3, 5, 7, 9]
-            #     k = random.sample(a, 1)[0]
-            #     image = Blur_aug(image, ksize=(k, k))
-            # if random.uniform(0, 1) > 0.7:
-            #     image = Gray_aug(image)
-            # if random.uniform(0, 1) > 0.7:
-            #     image = Swap_change_aug(image)
-            # if random.uniform(0, 1) > 0.7:
-            #     boxes_ = boxes[:, 0:4]
-            #     klass_ = boxes[:, 4:]
-            #     angle = random.sample([-90, 90], 1)[0]
-            #     image, boxes_ = Rotate_with_box(image, boxes=boxes_, angle=angle)
-            #     boxes = np.concatenate([boxes_, klass_], axis=1)
-
+                image=self.color_augmentor(image)
 
         else:
             boxes_ = boxes[:, 0:4]

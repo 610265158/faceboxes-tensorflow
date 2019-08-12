@@ -321,21 +321,16 @@ def Random_scale_withbbox(image,bboxes,target_shape,jitter=0.5):
 
     image=cv2.resize(croped,(rescale_w,rescale_h))
 
-    new_image=np.zeros(shape=[h,w,3],dtype=np.uint8)++np.array(cfg.DATA.PIXEL_MEAN,dtype=np.uint8)
 
-    dx = int(random.randint(0, w - rescale_w))
-    dy = int(random.randint(0, h - rescale_h))
 
-    new_image[dy:dy+rescale_h,dx:dx+rescale_w,:]=image
-
-    bboxes_fix[:, 0] = bboxes_fix[:, 0] * rescale_w/ croped_w+dx
-    bboxes_fix[:, 1] = bboxes_fix[:, 1] * rescale_h / croped_h+dy
-    bboxes_fix[:, 2] = bboxes_fix[:, 2] * rescale_w / croped_w+dx
-    bboxes_fix[:, 3] = bboxes_fix[:, 3] * rescale_h / croped_h+dy
+    bboxes_fix[:, 0] = bboxes_fix[:, 0] * rescale_w/ croped_w
+    bboxes_fix[:, 1] = bboxes_fix[:, 1] * rescale_h / croped_h
+    bboxes_fix[:, 2] = bboxes_fix[:, 2] * rescale_w / croped_w
+    bboxes_fix[:, 3] = bboxes_fix[:, 3] * rescale_h / croped_h
 
 
 
-    return new_image,bboxes_fix
+    return image,bboxes_fix
 
 
 def Random_flip(im, boxes):
@@ -367,41 +362,6 @@ def Pixel_jitter(src,p=0.5,max_=5.):
     else:
         src = src.astype(np.uint8)
         return src
-def Random_contrast(src,contrast_range=[0.8,1.4]):
-    src=src.astype(np.float32)
-    c=random.uniform(*contrast_range)
-    src=src*c
-    src[src>255]=255
-    src[src < 0] = 0
-
-    if np.sum(src) == 0:
-        print('there is an err with ')
-    src = src.astype(np.uint8)
-    return src
-
-
-
-def Random_saturation(src,_range=[0.5,1.5]):
-    src=src.astype(np.float32)
-    c=random.randint(0,2)
-
-
-    src[:,:,c]=src[:,:,c]*random.uniform(*_range)
-    src[src>255]=255
-    src[src < 0] = 0
-    if np.sum(src) == 0:
-        print('there is an err with ')
-    src = src.astype(np.uint8)
-    return src
-
-def Random_brightness(src, bright_shrink=40):
-    src = src.astype(np.float)
-    b = random.uniform(-bright_shrink,bright_shrink)
-    src = src +b
-    src[src > 255] = 255
-    src[src <0] = 0
-    src = src.astype(np.uint8)
-    return src
 
 
 def Gray_aug(src):
@@ -478,7 +438,7 @@ class RandomBaiduCrop(object):
         rand_idx = random.randint(0,len(boxArea)-1)
         rand_Side = boxArea[rand_idx] ** 0.5
         # rand_Side = min(boxes[rand_idx,2] - boxes[rand_idx,0] + 1, boxes[rand_idx,3] - boxes[rand_idx,1] + 1)
-        anchors = [32, 64, 128, 256, 512]
+        anchors = [16, 32, 64, 128, 256, 512]
         distance = self.infDistance
         anchor_idx = 5
         for i, anchor in enumerate(anchors):
@@ -597,7 +557,7 @@ class RandomBaiduCrop(object):
 import sys
 sys.path.append('.')
 from train_config import config as cfg
-baidu_aug=RandomBaiduCrop(cfg.MODEL.hin)
+baidu_aug=RandomBaiduCrop(cfg.DATA.hin)
 
 class RandomSampleCrop(object):
     """Crop
@@ -727,12 +687,117 @@ class RandomSampleCrop(object):
         return inter[:, 0] * inter[:, 1]
 dsfd_aug=RandomSampleCrop()
 
+
+def adjust_contrast(image, factor):
+    """ Adjust contrast of an image.
+
+    Args
+        image: Image to adjust.
+        factor: A factor for adjusting contrast.
+    """
+    mean = image.mean(axis=0).mean(axis=0)
+    return _clip((image - mean) * factor + mean)
+
+
+def adjust_brightness(image, delta):
+    """ Adjust brightness of an image
+
+    Args
+        image: Image to adjust.
+        delta: Brightness offset between -1 and 1 added to the pixel values.
+    """
+    return _clip(image + delta * 255)
+
+
+def adjust_hue(image, delta):
+    """ Adjust hue of an image.
+
+    Args
+        image: Image to adjust.
+        delta: An interval between -1 and 1 for the amount added to the hue channel.
+               The values are rotated if they exceed 180.
+    """
+    image[..., 0] = np.mod(image[..., 0] + delta * 180, 180)
+    return image
+
+
+def adjust_saturation(image, factor):
+    """ Adjust saturation of an image.
+
+    Args
+        image: Image to adjust.
+        factor: An interval for the factor multiplying the saturation values of each pixel.
+    """
+    image[..., 1] = np.clip(image[..., 1] * factor, 0, 255)
+    return image
+
+
+def _clip(image):
+    """
+    Clip and convert an image to np.uint8.
+
+    Args
+        image: Image to clip.
+    """
+    return np.clip(image, 0, 255).astype(np.uint8)
+def _uniform(val_range):
+    """ Uniformly sample from the given range.
+
+    Args
+        val_range: A pair of lower and upper bound.
+    """
+    return np.random.uniform(val_range[0], val_range[1])
+
+
+class ColorDistort():
+
+    def __init__(
+            self,
+            contrast_range=(0.8, 1.2),
+            brightness_range=(-.2, .2),
+            hue_range=(-0.1, 0.1),
+            saturation_range=(0.8, 1.2)
+    ):
+        self.contrast_range = contrast_range
+        self.brightness_range = brightness_range
+        self.hue_range = hue_range
+        self.saturation_range = saturation_range
+
+    def __call__(self, image):
+
+
+        if self.contrast_range is not None:
+            contrast_factor = _uniform(self.contrast_range)
+            image = adjust_contrast(image,contrast_factor)
+        if self.brightness_range is not None:
+            brightness_delta = _uniform(self.brightness_range)
+            image = adjust_brightness(image, brightness_delta)
+
+        if self.hue_range is not None or self.saturation_range is not None:
+
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+            if self.hue_range is not None:
+                hue_delta = _uniform(self.hue_range)
+                image = adjust_hue(image, hue_delta)
+
+            if self.saturation_range is not None:
+                saturation_factor = _uniform(self.saturation_range)
+                image = adjust_saturation(image, saturation_factor)
+
+            image = cv2.cvtColor(image, cv2.COLOR_HSV2BGR)
+
+        return image
+
+
+
+
 if __name__=='__main__':
     import sys
     sys.path.append('.')
     from train_config import config as cfg
     for i in range(1000):
-        image=cv2.imread('./data/augmentor/test.jpg')
+        image=cv2.imread('./lib/dataset/augmentor/test.jpg')
         boxes = np.array([[165, 60, 233, 138,1]],dtype=np.float)
         #bboxes=np.array([[165,60,233,138],[100,60,233,138]])
 
@@ -775,7 +840,7 @@ if __name__=='__main__':
             klass_ = boxes[:, 4:]
 
             image, boxes_, klass_ = dsfd_aug(image, boxes_, klass_)
-            image, shift_x, shift_y = Fill_img(image, target_width=cfg.MODEL.win, target_height=cfg.MODEL.hin)
+            image, shift_x, shift_y = Fill_img(image, target_width=cfg.DATA.win, target_height=cfg.DATA.hin)
             boxes_[:, 0:4] = boxes_[:, 0:4] + np.array([shift_x, shift_y, shift_x, shift_y], dtype='float32')
             h, w, _ = image.shape
             boxes_[:, 0] /= w
@@ -783,7 +848,7 @@ if __name__=='__main__':
             boxes_[:, 2] /= w
             boxes_[:, 3] /= h
             image = image.astype(np.uint8)
-            image = cv2.resize(image, (cfg.MODEL.win, cfg.MODEL.hin))
+            image = cv2.resize(image, (cfg.DATA.win, cfg.DATA.hin))
 
             boxes_[:, 0] *= cfg.DATA.win
             boxes_[:, 1] *= cfg.DATA.hin
@@ -796,7 +861,7 @@ if __name__=='__main__':
             klass_ = boxes[:, 4:]
             image,boxes_,klass_=baidu_aug(image,boxes_,klass_)
 
-            image, shift_x, shift_y = Fill_img(image, target_width=cfg.MODEL.win, target_height=cfg.MODEL.hin)
+            image, shift_x, shift_y = Fill_img(image, target_width=cfg.DATA.win, target_height=cfg.DATA.hin)
             boxes_[:, 0:4] = boxes_[:, 0:4] + np.array([shift_x, shift_y, shift_x, shift_y], dtype='float32')
             h, w, _ = image.shape
             boxes_[:, 0] /= w
@@ -804,7 +869,7 @@ if __name__=='__main__':
             boxes_[:, 2] /= w
             boxes_[:, 3] /= h
             image=image.astype(np.uint8)
-            image = cv2.resize(image, (cfg.MODEL.win, cfg.MODEL.hin))
+            image = cv2.resize(image, (cfg.DATA.win, cfg.DATA.hin))
 
             boxes_[:, 0] *= cfg.DATA.win
             boxes_[:, 1] *= cfg.DATA.hin
