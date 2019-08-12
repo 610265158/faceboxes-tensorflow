@@ -557,7 +557,7 @@ class RandomBaiduCrop(object):
 import sys
 sys.path.append('.')
 from train_config import config as cfg
-baidu_aug=RandomBaiduCrop(cfg.DATA.hin)
+baidu_aug=RandomBaiduCrop(cfg.MODEL.hin)
 
 class RandomSampleCrop(object):
     """Crop
