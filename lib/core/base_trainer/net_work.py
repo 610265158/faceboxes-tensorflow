@@ -12,12 +12,12 @@ from train_config import config as cfg
 
 from lib.helper.logger import logger
 from lib.core.model.facebox.net import facebox
-from lib.dataset.dataietr import FaceBoxesDataIter
+from lib.dataset.dataietr import DataIter
 
 class trainner():
     def __init__(self):
-        self.train_ds=FaceBoxesDataIter(cfg.DATA.root_path,cfg.DATA.train_txt_path,training_flag=True)
-        self.val_ds = FaceBoxesDataIter(cfg.DATA.root_path,cfg.DATA.val_txt_path,training_flag=False)
+        self.train_ds=DataIter(cfg.DATA.root_path,cfg.DATA.train_txt_path,training_flag=True)
+        self.val_ds = DataIter(cfg.DATA.root_path,cfg.DATA.val_txt_path,training_flag=False)
 
         self.inputs=[]
         self.outputs=[]

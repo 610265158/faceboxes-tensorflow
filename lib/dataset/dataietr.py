@@ -8,13 +8,19 @@ import numpy as np
 from functools import partial
 
 from lib.helper.logger import logger
-from tensorpack.dataflow import DataFromList
+from tensorpack.dataflow import DataFromGenerator,DataFromList
 from tensorpack.dataflow import BatchData, MultiThreadMapData, MultiProcessPrefetchData
 
 
 from lib.dataset.augmentor.augmentation import ColorDistort,Random_scale_withbbox,Random_flip, Fill_img,baidu_aug,dsfd_aug
 from lib.core.model.facebox.training_target_creation import get_training_targets
 from train_config import config as cfg
+
+
+
+
+
+
 
 
 class data_info(object):
@@ -49,24 +55,26 @@ class data_info(object):
         random.shuffle(self.metas)
         return self.metas
 
+class FaceBoxesDataIter():
+    def __init__(self,img_root_path='',ann_file=None,training_flag=True, shuffle=True):
 
-class BaseDataIter():
-    def __init__(self,img_root_path='',ann_file=None,training_flag=True):
+        self.color_augmentor = ColorDistort()
 
-        self.shuffle=True
         self.training_flag=training_flag
 
-        self.num_gpu = cfg.TRAIN.num_gpu
-        self.batch_size = cfg.TRAIN.batch_size
-        self.thread_num = cfg.TRAIN.thread_num
-        self.process_num = cfg.TRAIN.process_num
-        self.buffer_size = cfg.TRAIN.buffer_size
-        self.prefetch_size = cfg.TRAIN.prefetch_size
+        self.lst=self.parse_file(img_root_path,ann_file)
 
+        self.shuffle=shuffle
 
-        self.dataset_list = self.parse_file(img_root_path, ann_file)
+    def __iter__(self):
+        idxs = np.arange(len(self.lst))
 
-        self.ds=self.build_iter(self.dataset_list)
+        while True:
+            if self.shuffle:
+                np.random.shuffle(idxs)
+            for k in idxs:
+                yield self._map_func(self.lst[k], self.training_flag)
+
 
 
     def parse_file(self,im_root_path,ann_file):
@@ -81,43 +89,6 @@ class BaseDataIter():
         return all_samples
 
 
-    def build_iter(self,samples):
-
-
-        map_func=partial(self._map_func,is_training=self.training_flag)
-        ds = DataFromList(samples, shuffle=True)
-
-        ds = MultiThreadMapData(ds, self.thread_num, map_func, buffer_size=self.buffer_size)
-
-        ds = BatchData(ds, self.num_gpu *  self.batch_size)
-        ds = MultiProcessPrefetchData(ds, self.prefetch_size, self.process_num)
-        ds.reset_state()
-        ds = ds.get_data()
-        return ds
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        return next(self.ds)
-
-
-    def _map_func(self,dp,is_training):
-
-        raise NotImplementedError("you need implemented the map func for your data")
-
-    def set_params(self):
-        raise NotImplementedError("you need implemented  func for your data")
-
-
-
-class FaceBoxesDataIter(BaseDataIter):
-    def __init__(self,img_root_path='',ann_file=None,training_flag=True):
-
-        self.color_augmentor = ColorDistort()
-
-        ###init the base class at last !!
-        super(FaceBoxesDataIter, self).__init__(img_root_path,ann_file,training_flag)
 
     def _map_func(self,dp,is_training):
         fname, annos = dp
@@ -249,3 +220,48 @@ class FaceBoxesDataIter(BaseDataIter):
     def produce_target(self,bboxes):
         reg_targets, matches = get_training_targets(bboxes, threshold=cfg.MODEL.MATCHING_THRESHOLD)
         return reg_targets, matches
+
+
+
+class DataIter():
+    def __init__(self,img_root_path='',ann_file=None,training_flag=True):
+
+
+        self.training_flag=training_flag
+
+        self.num_gpu = cfg.TRAIN.num_gpu
+        self.batch_size = cfg.TRAIN.batch_size
+        self.process_num = cfg.TRAIN.process_num
+        self.buffer_size = cfg.TRAIN.buffer_size
+        self.prefetch_size = cfg.TRAIN.prefetch_size
+
+
+        self.generator=FaceBoxesDataIter(img_root_path,ann_file,self.training_flag,)
+
+        self.ds=self.build_iter()
+
+
+
+
+    def build_iter(self):
+
+
+        ds = DataFromGenerator(self.generator)
+
+        ds = BatchData(ds, self.num_gpu *  self.batch_size)
+        ds = MultiProcessPrefetchData(ds, self.prefetch_size, self.process_num)
+        ds.reset_state()
+        ds = ds.get_data()
+        return ds
+
+
+    def __next__(self):
+        return next(self.ds)
+
+
+    def _map_func(self,dp,is_training):
+
+        raise NotImplementedError("you need implemented the map func for your data")
+
+    def set_params(self):
+        raise NotImplementedError("you need implemented  func for your data")
