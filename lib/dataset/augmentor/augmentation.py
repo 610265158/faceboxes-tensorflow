@@ -282,15 +282,13 @@ def box_in_img(img,boxes,min_overlap=0.5):
 
 def Random_scale_withbbox(image,bboxes,target_shape,jitter=0.5):
 
-    ###the boxes is in ymin,xmin,ymax,xmax mode
+    ###the boxes is in xmin,ymin,xmax,ymax
     hi, wi, _ = image.shape
 
     while 1:
-        if len(bboxes)==0:
-            print('errrrrrr')
         bboxes_=np.array(bboxes)
-        crop_h = int(hi * random.uniform(0.2, 1))
-        crop_w = int(wi * random.uniform(0.2, 1))
+        crop_h = int(hi * random.uniform(jitter, 1))
+        crop_w = int(wi * random.uniform(jitter, 1))
 
         start_h = random.randint(0, hi - crop_h)
         start_w = random.randint(0, wi - crop_w)
@@ -302,11 +300,9 @@ def Random_scale_withbbox(image,bboxes,target_shape,jitter=0.5):
         bboxes_[:, 2] = bboxes_[:, 2] - start_w
         bboxes_[:, 3] = bboxes_[:, 3] - start_h
 
-
         bboxes_fix=box_in_img(croped,bboxes_)
         if len(bboxes_fix)>0:
             break
-
 
     ###use box
     h,w=target_shape

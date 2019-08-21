@@ -98,78 +98,43 @@ class FaceBoxesDataIter():
         boxes = []
         for label in labels:
             bbox = np.array(label.split(','), dtype=np.float)
-            ##the anchor need ymin,xmin,ymax,xmax
             boxes.append([bbox[0], bbox[1], bbox[2], bbox[3], 1])
 
         boxes = np.array(boxes, dtype=np.float)
 
-        ###clip the bbox for the reason that some bboxs are beyond the image
-        # h_raw_limit, w_raw_limit, _ = image.shape
-        # boxes[:, 3] = np.clip(boxes[:, 3], 0, w_raw_limit)
-        # boxes[:, 2] = np.clip(boxes[:, 2], 0, h_raw_limit)
-        # boxes[boxes < 0] = 0
+
         #########random scale
         ############## becareful with this func because there is a Infinite loop in its body
         if is_training:
 
-            sample_dice = random.uniform(0, 1)
-            if sample_dice > 0.6 and sample_dice <= 1:
-                image, boxes = Random_scale_withbbox(image, boxes, target_shape=[cfg.MODEL.hin, cfg.MODEL.win],
-                                                     jitter=0.3)
+            image, boxes = Random_scale_withbbox(image, boxes, target_shape=[cfg.MODEL.hin, cfg.MODEL.win],
+                                                 jitter=0.3)
 
-            if sample_dice > 0.3 and sample_dice <= 0.6:
-                boxes_ = boxes[:, 0:4]
-                klass_ = boxes[:, 4:]
+            boxes_ = boxes[:, 0:4]
+            klass_ = boxes[:, 4:]
 
-                image, boxes_, klass_ = dsfd_aug(image, boxes_, klass_)
-                if random.uniform(0, 1) > 0.5:
-                    image, shift_x, shift_y = Fill_img(image, target_width=cfg.MODEL.win, target_height=cfg.MODEL.hin)
-                    boxes_[:, 0:4] = boxes_[:, 0:4] + np.array([shift_x, shift_y, shift_x, shift_y], dtype='float32')
-                h, w, _ = image.shape
-                boxes_[:, 0] /= w
-                boxes_[:, 1] /= h
-                boxes_[:, 2] /= w
-                boxes_[:, 3] /= h
-                interp_methods = [cv2.INTER_LINEAR, cv2.INTER_CUBIC, cv2.INTER_AREA, cv2.INTER_NEAREST,
-                                  cv2.INTER_LANCZOS4]
-                interp_method = random.choice(interp_methods)
-                image = cv2.resize(image, (cfg.MODEL.win, cfg.MODEL.hin), interpolation=interp_method)
+            image, shift_x, shift_y = Fill_img(image, target_width=cfg.MODEL.win, target_height=cfg.MODEL.hin)
+            boxes_[:, 0:4] = boxes_[:, 0:4] + np.array([shift_x, shift_y, shift_x, shift_y], dtype='float32')
+            h, w, _ = image.shape
+            boxes_[:, 0] /= w
+            boxes_[:, 1] /= h
+            boxes_[:, 2] /= w
+            boxes_[:, 3] /= h
 
-                boxes_[:, 0] *= cfg.MODEL.win
-                boxes_[:, 1] *= cfg.MODEL.hin
-                boxes_[:, 2] *= cfg.MODEL.win
-                boxes_[:, 3] *= cfg.MODEL.hin
-                image = image.astype(np.uint8)
-                boxes = np.concatenate([boxes_, klass_], axis=1)
-            else:
-                boxes_ = boxes[:, 0:4]
-                klass_ = boxes[:, 4:]
-                image, boxes_, klass_ = baidu_aug(image, boxes_, klass_)
-                if random.uniform(0, 1) > 0.5:
-                    image, shift_x, shift_y = Fill_img(image, target_width=cfg.MODEL.win, target_height=cfg.MODEL.hin)
-                    boxes_[:, 0:4] = boxes_[:, 0:4] + np.array([shift_x, shift_y, shift_x, shift_y], dtype='float32')
-                h, w, _ = image.shape
-                boxes_[:, 0] /= w
-                boxes_[:, 1] /= h
-                boxes_[:, 2] /= w
-                boxes_[:, 3] /= h
+            interp_methods = [cv2.INTER_LINEAR, cv2.INTER_CUBIC, cv2.INTER_AREA, cv2.INTER_NEAREST,
+                              cv2.INTER_LANCZOS4]
+            interp_method = random.choice(interp_methods)
+            image = cv2.resize(image, (cfg.MODEL.win, cfg.MODEL.hin), interpolation=interp_method)
 
-                interp_methods = [cv2.INTER_LINEAR, cv2.INTER_CUBIC, cv2.INTER_AREA, cv2.INTER_NEAREST,
-                                  cv2.INTER_LANCZOS4]
-                interp_method = random.choice(interp_methods)
-                image = cv2.resize(image, (cfg.MODEL.win, cfg.MODEL.hin), interpolation=interp_method)
-
-                boxes_[:, 0] *= cfg.MODEL.win
-                boxes_[:, 1] *= cfg.MODEL.hin
-                boxes_[:, 2] *= cfg.MODEL.win
-                boxes_[:, 3] *= cfg.MODEL.hin
-                image = image.astype(np.uint8)
-                boxes = np.concatenate([boxes_, klass_], axis=1)
+            boxes_[:, 0] *= cfg.MODEL.win
+            boxes_[:, 1] *= cfg.MODEL.hin
+            boxes_[:, 2] *= cfg.MODEL.win
+            boxes_[:, 3] *= cfg.MODEL.hin
+            image = image.astype(np.uint8)
+            boxes = np.concatenate([boxes_, klass_], axis=1)
 
             if random.uniform(0, 1) > 0.5:
                 image, boxes = Random_flip(image, boxes)
-            # if random.uniform(0, 1) > 0.5:
-            #     image = Pixel_jitter(image, max_=15)
             if random.uniform(0, 1) > 0.5:
                 image=self.color_augmentor(image)
 
@@ -205,10 +170,13 @@ class FaceBoxesDataIter():
         boxes = np.array(boxes_clean)
         boxes = boxes / cfg.MODEL.hin
 
-        # for i in range(boxes.shape[0]):
-        #     box=boxes[i]
-        #     cv2.rectangle(image, (int(box[1]*cfg.MODEL.hin), int(box[0]*cfg.MODEL.hin)),
-        #                                 (int(box[3]*cfg.MODEL.hin), int(box[2]*cfg.MODEL.hin)), (255, 0, 0), 7)
+
+
+        if cfg.TRAIN.vis:
+            for i in range(boxes.shape[0]):
+                box=boxes[i]
+                cv2.rectangle(image, (int(box[1]*cfg.MODEL.hin), int(box[0]*cfg.MODEL.hin)),
+                                            (int(box[3]*cfg.MODEL.hin), int(box[2]*cfg.MODEL.hin)), (255, 0, 0), 7)
 
         reg_targets, matches = self.produce_target(boxes)
 
