@@ -158,10 +158,10 @@ def decode(codes, anchors):
         ty2 /= SCALE_FACTORS[2]
         tx2 /= SCALE_FACTORS[3]
 
-        x1 = ty1 * anchor_heights + anchors[:, 0]
-        y1 = tx1 * anchor_widths + anchors[:, 1]
-        x2 = ty2 * anchor_heights + anchors[:, 2]
-        y2 = tx2 * anchor_widths + anchors[:, 3]
+        y1 = ty1 * anchor_heights + anchors[:, 0]
+        x1 = tx1 * anchor_widths + anchors[:, 1]
+        y2 = ty2 * anchor_heights + anchors[:, 2]
+        x2 = tx2 * anchor_widths + anchors[:, 3]
 
         return tf.stack([y1, x1, y2, x2], axis=1)
 
