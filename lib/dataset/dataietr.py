@@ -200,9 +200,7 @@ class DataIter():
         self.num_gpu = cfg.TRAIN.num_gpu
         self.batch_size = cfg.TRAIN.batch_size
         self.process_num = cfg.TRAIN.process_num
-        self.buffer_size = cfg.TRAIN.buffer_size
         self.prefetch_size = cfg.TRAIN.prefetch_size
-
 
         self.generator=FaceBoxesDataIter(img_root_path,ann_file,self.training_flag,)
 
