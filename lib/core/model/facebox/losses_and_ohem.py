@@ -8,7 +8,7 @@ so num_classes = 1.
 
 from train_config import config as cfg
 
-def localization_loss(predictions, targets, weights):
+def localization_loss(predictions, targets, weights,sigma=9):
     """A usual L1 smooth loss.
 
     Arguments:
@@ -21,9 +21,9 @@ def localization_loss(predictions, targets, weights):
         a float tensor with shape [batch_size, num_anchors].
     """
     abs_diff = tf.abs(predictions - targets)
-    abs_diff_lt_1 = tf.less(abs_diff, 1.0)
+    abs_diff_lt_1 = tf.less(abs_diff, 1.0/sigma)
     return weights * tf.reduce_sum(
-        tf.where(abs_diff_lt_1, 0.5 * tf.square(abs_diff), abs_diff - 0.5), axis=2
+        tf.where(abs_diff_lt_1, 0.5 * tf.square(abs_diff), abs_diff - 0.5/sigma), axis=2
     )
 
 

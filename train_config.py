@@ -48,6 +48,11 @@ anchorgenerator = AnchorGenerator()
 config.MODEL.anchors=anchorgenerator(config.MODEL.feature_maps_size, (config.MODEL.hin*2, config.MODEL.win*2))
 
 
+config.TEST = edict()
+
+config.TEST.score_threshold=0.05
+config.TEST.iou_threshold=0.3
+config.TEST.max_boxes=500
 
 
 config.DATA = edict()

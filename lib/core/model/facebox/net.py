@@ -10,7 +10,7 @@ from lib.core.model.facebox.utils.nms import batch_non_max_suppression
 from train_config import config as cfg
 
 def facebox_arg_scope(weight_decay=0.00001,
-                     batch_norm_decay=0.99,
+                     batch_norm_decay=0.997,
                      batch_norm_epsilon=1e-5,
                      batch_norm_scale=True,
                      use_batch_norm=True,
@@ -59,24 +59,6 @@ def facebox_arg_scope(weight_decay=0.00001,
       with slim.arg_scope([slim.max_pool2d], padding='SAME') as arg_sc:
         return arg_sc
 
-
-def halo(x,out_channels,scope):
-
-    with tf.variable_scope(scope):
-        with tf.variable_scope('first_branch'):
-            x1 = slim.conv2d(x, out_channels//2, [3, 3], stride=2, activation_fn=tf.nn.relu, scope='_conv_1_1')
-        with tf.variable_scope('second_branch'):
-            x2 = slim.conv2d(x, out_channels // 2, [3, 3], stride=1, activation_fn=tf.nn.relu, scope='_conv_2_1')
-            x2 = slim.conv2d(x2, out_channels//2, [3, 3], stride=2, activation_fn=tf.nn.relu, scope='_conv_2_2')
-    x = tf.concat([x1, x2], axis=3)
-    return x
-
-
-def block(x,num_units,out_channels,scope):
-    with tf.variable_scope(scope):
-        x=halo(x,out_channels,scope)
-
-    return x
 def inception_block(x,scope):
     # path 1
     x1 = slim.conv2d(x, 32, (1, 1), scope=scope + '/conv_1x1_path1')
@@ -181,11 +163,11 @@ def preprocess( image):
             image = tf.cast(image, tf.float32)
 
         mean = cfg.DATA.PIXEL_MEAN
-        std = np.asarray(cfg.DATA.PIXEL_STD)
+        #std = np.asarray(cfg.DATA.PIXEL_STD)
 
         image_mean = tf.constant(mean, dtype=tf.float32)
-        image_invstd = tf.constant(1.0 / std, dtype=tf.float32)
-        image = (image - image_mean)  * image_invstd
+        #image_invstd = tf.constant(1.0 / std, dtype=tf.float32)
+        image = (image - image_mean)
 
     return image
 def facebox_backbone(inputs,L2_reg,training=True):
@@ -244,9 +226,7 @@ def facebox(inputs, reg_targets, matches, L2_reg, training):
 
 
 
-
-
-def get_predictions(box_encodings,cla,anchors, score_threshold=0.05, iou_threshold=0.3, max_boxes=100):
+def get_predictions(box_encodings,cla,anchors, score_threshold=cfg.TEST.score_threshold, iou_threshold=cfg.TEST.iou_threshold, max_boxes=cfg.TEST.max_boxes):
     """Postprocess outputs of the network.
 
     Returns:

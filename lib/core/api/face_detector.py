@@ -80,14 +80,14 @@ class FaceDetector:
         raw_width = img_raw.shape[1]
         if raw_width / raw_height >= target_width / target_height:
             shape_need = [int(target_height / target_width * raw_width), raw_width, channel]
-            img_fill = np.zeros(shape_need, dtype=img_raw.dtype)
+            img_fill = np.zeros(shape_need, dtype=img_raw.dtype)+np.array(cfg.DATA.PIXEL_MEAN,dtype=img_raw.dtype)
             shift_x=(img_fill.shape[1]-raw_width)//2
             shift_y=(img_fill.shape[0]-raw_height)//2
             for i in range(channel):
                 img_fill[shift_y:raw_height+shift_y, shift_x:raw_width+shift_x, i] = img_raw[:,:,i]
         else:
             shape_need = [raw_height, int(target_width / target_height * raw_height), channel]
-            img_fill = np.zeros(shape_need, dtype=img_raw.dtype)
+            img_fill = np.zeros(shape_need, dtype=img_raw.dtype)+np.array(cfg.DATA.PIXEL_MEAN,dtype=img_raw.dtype)
             shift_x = (img_fill.shape[1] - raw_width) // 2
             shift_y = (img_fill.shape[0] - raw_height) // 2
             for i in range(channel):
