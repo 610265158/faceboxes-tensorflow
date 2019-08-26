@@ -1,7 +1,7 @@
 import cv2
 import os
 import time
-from lib.core.api import FaceDetector
+from lib.core.api.face_detector import FaceDetector
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 detector = FaceDetector(['./model/detector.pb'])

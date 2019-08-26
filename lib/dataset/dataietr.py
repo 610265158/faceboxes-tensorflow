@@ -8,11 +8,18 @@ import numpy as np
 from functools import partial
 
 from lib.helper.logger import logger
-from tensorpack.dataflow import DataFromGenerator,DataFromList
-from tensorpack.dataflow import BatchData, MultiThreadMapData, MultiProcessPrefetchData
+from tensorpack.dataflow import DataFromGenerator
+from tensorpack.dataflow import BatchData, MultiProcessPrefetchData
 
 
-from lib.dataset.augmentor.augmentation import ColorDistort,Random_scale_withbbox,Random_flip, Fill_img,Swap_change_aug,Pixel_jitter
+from lib.dataset.augmentor.augmentation import ColorDistort,\
+    Random_scale_withbbox,\
+    Random_flip,\
+    Fill_img,\
+    Swap_change_aug,\
+    Pixel_jitter,\
+    Gray_aug
+
 from lib.core.model.facebox.training_target_creation import get_training_targets
 from train_config import config as cfg
 
@@ -113,8 +120,9 @@ class FaceBoxesDataIter():
             boxes_ = boxes[:, 0:4]
             klass_ = boxes[:, 4:]
 
-            image, shift_x, shift_y = Fill_img(image, target_width=cfg.MODEL.win, target_height=cfg.MODEL.hin)
-            boxes_[:, 0:4] = boxes_[:, 0:4] + np.array([shift_x, shift_y, shift_x, shift_y], dtype='float32')
+            if random.uniform(0, 1) > 0.5:
+                image, shift_x, shift_y = Fill_img(image, target_width=cfg.MODEL.win, target_height=cfg.MODEL.hin)
+                boxes_[:, 0:4] = boxes_[:, 0:4] + np.array([shift_x, shift_y, shift_x, shift_y], dtype='float32')
             h, w, _ = image.shape
             boxes_[:, 0] /= w
             boxes_[:, 1] /= h
@@ -137,11 +145,14 @@ class FaceBoxesDataIter():
                 image, boxes = Random_flip(image, boxes)
             if random.uniform(0, 1) > 0.5:
                 image=self.color_augmentor(image)
-
             if random.uniform(0, 1) > 0.7:
                 image = Swap_change_aug(image)
             if random.uniform(0, 1) > 0.6:
                 image = Pixel_jitter(image, max_=15)
+            if random.uniform(0, 1) > 0.7:
+                image = Gray_aug(image)
+
+
         else:
             boxes_ = boxes[:, 0:4]
             klass_ = boxes[:, 4:]

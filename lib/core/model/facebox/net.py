@@ -10,7 +10,7 @@ from lib.core.model.facebox.utils.nms import batch_non_max_suppression
 from train_config import config as cfg
 
 def facebox_arg_scope(weight_decay=0.00001,
-                     batch_norm_decay=0.997,
+                     batch_norm_decay=0.9,
                      batch_norm_epsilon=1e-5,
                      batch_norm_scale=True,
                      use_batch_norm=True,
