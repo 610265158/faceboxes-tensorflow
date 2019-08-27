@@ -11,7 +11,7 @@ config.TRAIN = edict()
 #### below are params for dataiter
 config.TRAIN.num_gpu = 1
 config.TRAIN.process_num = 3                    ####processors_num for data provider
-config.TRAIN.prefetch_size = 50                ####Q size for data provider
+config.TRAIN.prefetch_size = 100                ####Q size for data provider
 ############
 
 config.TRAIN.batch_size = 32
@@ -32,8 +32,8 @@ config.MODEL.continue_train=False                                       ### revo
 config.MODEL.net_structure=None                                         ######
 config.MODEL.pretrained_model=None                                      ######
 #####
-config.MODEL.hin = 1024                                                  # input size during training , 512  different with the paper
-config.MODEL.win = 1024
+config.MODEL.hin = 512                                                  # input size during training , 512  different with the paper
+config.MODEL.win = 512
 config.MODEL.feature_maps_size=[[32,32],[16,16],[8,8]]
 config.MODEL.num_anchors=21824  ##it should be
 
@@ -45,7 +45,7 @@ try:
 except:
     from anchor_generator import AnchorGenerator
 anchorgenerator = AnchorGenerator()
-config.MODEL.anchors=anchorgenerator(config.MODEL.feature_maps_size, (config.MODEL.hin, config.MODEL.win))
+config.MODEL.anchors=anchorgenerator(config.MODEL.feature_maps_size, (config.MODEL.hin*2, config.MODEL.win*2))
 
 config.TEST = edict()
 config.TEST.score_threshold=0.05

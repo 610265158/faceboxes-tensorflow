@@ -419,7 +419,6 @@ class RandomBaiduCrop(object):
 
     def __init__(self, size):
 
-        self.mean = np.array([104, 117, 123], dtype=np.float32)
         self.maxSize = 12000  # max size
         self.infDistance = 9999999
         self.size = size

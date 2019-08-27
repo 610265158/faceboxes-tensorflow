@@ -18,7 +18,8 @@ from lib.dataset.augmentor.augmentation import ColorDistort,\
     Fill_img,\
     Swap_change_aug,\
     Pixel_jitter,\
-    Gray_aug
+    Gray_aug,\
+    baidu_aug
 
 from lib.core.model.facebox.training_target_creation import get_training_targets
 from train_config import config as cfg
@@ -114,12 +115,20 @@ class FaceBoxesDataIter():
         ############## becareful with this func because there is a Infinite loop in its body
         if is_training:
 
-            image, boxes = Random_scale_withbbox(image, boxes, target_shape=[cfg.MODEL.hin, cfg.MODEL.win],
-                                                 jitter=0.3)
+            if random.uniform(0, 1) > 0.5:
+                image, boxes = Random_scale_withbbox(image, boxes, target_shape=[cfg.MODEL.hin, cfg.MODEL.win],
+                                                     jitter=0.3)
+            else:
+                boxes_ = boxes[:, 0:4]
+                klass_ = boxes[:, 4:]
+                image, boxes_, klass_ = baidu_aug(image, boxes_, klass_)
+
+                image = image.astype(np.uint8)
+                boxes = np.concatenate([boxes_, klass_], axis=1)
+
 
             boxes_ = boxes[:, 0:4]
             klass_ = boxes[:, 4:]
-
 
             image, shift_x, shift_y = Fill_img(image, target_width=cfg.MODEL.win, target_height=cfg.MODEL.hin)
             boxes_[:, 0:4] = boxes_[:, 0:4] + np.array([shift_x, shift_y, shift_x, shift_y], dtype='float32')
