@@ -27,7 +27,7 @@ class FaceDetector:
             ]
 
 
-    def __call__(self, image, score_threshold=0.5,minface=40):
+    def __call__(self, image, score_threshold=0.5):
         """Detect faces.
 
         Arguments:
@@ -41,11 +41,8 @@ class FaceDetector:
         Note that box coordinates are in the order: ymin, xmin, ymax, xmax!
         """
 
-        # image_fornet=image
-        # shift_x, shift_y=0,0
-        image_fornet,shift_x,shift_y=self.Fill_img(image,target_width=cfg.MODEL.hin,target_height=cfg.MODEL.win)
-        h, w, _ = image_fornet.shape
-        image_fornet=cv2.resize(image_fornet,(cfg.MODEL.win,cfg.MODEL.hin))
+        image_fornet,scale_x,scale_y=self.preprocess(image,target_width=cfg.MODEL.win,target_height=cfg.MODEL.hin)
+
 
         image_fornet = np.expand_dims(image_fornet, 0)
 
@@ -62,42 +59,55 @@ class FaceDetector:
         to_keep = scores > score_threshold
         boxes = boxes[to_keep]
         scores = scores[to_keep]
+
         ###recorver to raw image
-        scaler = np.array([h, w, h, w], dtype='float32')
+        scaler = np.array([cfg.MODEL.hin*scale_y,
+                           cfg.MODEL.win*scale_x,
+                           cfg.MODEL.hin*scale_y,
+                           cfg.MODEL.win*scale_x], dtype='float32')
         boxes = boxes * scaler
-        boxes =boxes-np.array([shift_y, shift_x, shift_y, shift_x], dtype='float32')
 
         scores=np.expand_dims(scores, 0).reshape([-1,1])
-        for i in range(boxes.shape[0]):
-            boxes[i] = np.array([boxes[i][1], boxes[i][0], boxes[i][3],boxes[i][2]])  #####the faceboxe produce ymin,xmin,ymax,xmax
 
+        #####the tf.nms produce ymin,xmin,ymax,xmax,  swap it in to xmin,ymin,xmax,ymax
+        for i in range(boxes.shape[0]):
+            boxes[i] = np.array([boxes[i][1], boxes[i][0], boxes[i][3],boxes[i][2]])
         return np.concatenate([boxes, scores],axis=1)
-    def Fill_img(self,img_raw,target_height,target_width,label=None):
+
+    def preprocess(self,image,target_height,target_width,label=None):
 
         ###sometimes use in objs detects
-        channel=img_raw.shape[2]
-        raw_height = img_raw.shape[0]
-        raw_width = img_raw.shape[1]
-        if raw_width / raw_height >= target_width / target_height:
-            shape_need = [int(target_height / target_width * raw_width), raw_width, channel]
-            img_fill = np.zeros(shape_need, dtype=img_raw.dtype)+np.array(cfg.DATA.PIXEL_MEAN,dtype=img_raw.dtype)
-            shift_x=(img_fill.shape[1]-raw_width)//2
-            shift_y=(img_fill.shape[0]-raw_height)//2
-            for i in range(channel):
-                img_fill[shift_y:raw_height+shift_y, shift_x:raw_width+shift_x, i] = img_raw[:,:,i]
+        h,w,c=image.shape
+
+
+        bimage=np.zeros(shape=[target_height,target_width,c],dtype=image.dtype)+np.array(cfg.DATA.PIXEL_MEAN,dtype=image.dtype)
+
+        if h <=target_height and w <=target_width:
+            bimage[:h,:w,:]=image
+            scale_x=1.
+            scale_y=1.
         else:
-            shape_need = [raw_height, int(target_width / target_height * raw_height), channel]
-            img_fill = np.zeros(shape_need, dtype=img_raw.dtype)+np.array(cfg.DATA.PIXEL_MEAN,dtype=img_raw.dtype)
-            shift_x = (img_fill.shape[1] - raw_width) // 2
-            shift_y = (img_fill.shape[0] - raw_height) // 2
-            for i in range(channel):
-                img_fill[shift_y:raw_height + shift_y, shift_x:raw_width + shift_x, i] = img_raw[:, :, i]
-        if label is None:
-            return img_fill,shift_x,shift_y
-        else:
-            label[:,0]+=shift_x
-            label[:, 1]+=shift_y
-            return img_fill,label
+            long_side=max(h,w)
+
+            scale_x=scale_y=target_height/long_side
+
+
+
+            image=cv2.resize(image, None,fx=scale_x,fy=scale_y)
+
+
+            h_,w_,_=image.shape
+            bimage[:h_, :w_, :] = image
+
+
+        return bimage,scale_x,scale_y
+
+
+
+
+
+
+
     def init_model(self,*args):
 
         if len(args) == 1:

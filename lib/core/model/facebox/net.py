@@ -10,7 +10,7 @@ from lib.core.model.facebox.utils.nms import batch_non_max_suppression
 from train_config import config as cfg
 
 def facebox_arg_scope(weight_decay=0.00001,
-                     batch_norm_decay=0.9,
+                     batch_norm_decay=0.99,
                      batch_norm_epsilon=1e-5,
                      batch_norm_scale=True,
                      use_batch_norm=True,
@@ -78,7 +78,7 @@ def inception_block(x,scope):
 
 def RDCL(net_in):
     with tf.name_scope('RDCL'):
-        net = slim.conv2d(net_in, 24, [7, 7], stride=2,activation_fn=tf.nn.crelu, scope='init_conv')
+        net = slim.conv2d(net_in, 24, [7, 7], stride=4,activation_fn=tf.nn.crelu, scope='init_conv')
         net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool')
         net = slim.conv2d(net, 64, [5, 5], stride=2,activation_fn=tf.nn.crelu,scope='conv1x1_before')
         net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool2')
@@ -163,13 +163,14 @@ def preprocess( image):
             image = tf.cast(image, tf.float32)
 
         mean = cfg.DATA.PIXEL_MEAN
-        #std = np.asarray(cfg.DATA.PIXEL_STD)
+        std = np.asarray(cfg.DATA.PIXEL_STD)
 
         image_mean = tf.constant(mean, dtype=tf.float32)
-        #image_invstd = tf.constant(1.0 / std, dtype=tf.float32)
-        image = (image - image_mean)
+        image_invstd = tf.constant(1.0 / std, dtype=tf.float32)
+        image = (image - image_mean)*image_invstd
 
     return image
+
 def facebox_backbone(inputs,L2_reg,training=True):
     inputs=preprocess(inputs)
     arg_scope = facebox_arg_scope(weight_decay=L2_reg)
@@ -184,6 +185,8 @@ def facebox_backbone(inputs,L2_reg,training=True):
     return reg,cla
 
 def facebox(inputs, reg_targets, matches, L2_reg, training):
+
+
     loc_predict, cla_predict = facebox_backbone(inputs, L2_reg, training)
 
     with tf.name_scope('losses'):
@@ -214,13 +217,13 @@ def facebox(inputs, reg_targets, matches, L2_reg, training):
             normalizer = tf.maximum(num_matches, 1.0)
 
 
-    ######add nms in the graph
-    get_predictions(loc_predict,cla_predict,anchors=cfg.MODEL.anchors)
+
 
     reg_loss = tf.reduce_sum(location_losses) / normalizer
     cla_loss = tf.reduce_sum(cls_losses) / normalizer
 
-
+    ######add nms in the graph
+    get_predictions(loc_predict, cla_predict, anchors=cfg.MODEL.anchors)
     return {'localization_loss': reg_loss, 'classification_loss':cla_loss}
 
 
@@ -245,7 +248,7 @@ def get_predictions(box_encodings,cla,anchors, score_threshold=cfg.TEST.score_th
         # it has shape [batch_size, num_anchors, 4]
 
         scores = tf.nn.softmax(cla, axis=2)[:, :, 1]
-        # it has shape [batch_size, num_anchors]
+        # it has shape [batch_size, num_anchors],  background are ignored
 
     with tf.device('/cpu:0'), tf.name_scope('nms'):
         boxes, scores, num_detections = batch_non_max_suppression(

@@ -252,7 +252,7 @@ def Random_crop(src,shrink):
 
     return target_img
 
-def box_in_img(img,boxes,min_overlap=0.5):
+def box_in_img(img,boxes,min_overlap=0.3):
 
     raw_bboxes = np.array(boxes)
 

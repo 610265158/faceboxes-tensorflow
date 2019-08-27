@@ -120,9 +120,9 @@ class FaceBoxesDataIter():
             boxes_ = boxes[:, 0:4]
             klass_ = boxes[:, 4:]
 
-            if random.uniform(0, 1) > 0.5:
-                image, shift_x, shift_y = Fill_img(image, target_width=cfg.MODEL.win, target_height=cfg.MODEL.hin)
-                boxes_[:, 0:4] = boxes_[:, 0:4] + np.array([shift_x, shift_y, shift_x, shift_y], dtype='float32')
+
+            image, shift_x, shift_y = Fill_img(image, target_width=cfg.MODEL.win, target_height=cfg.MODEL.hin)
+            boxes_[:, 0:4] = boxes_[:, 0:4] + np.array([shift_x, shift_y, shift_x, shift_y], dtype='float32')
             h, w, _ = image.shape
             boxes_[:, 0] /= w
             boxes_[:, 1] /= h
@@ -145,10 +145,8 @@ class FaceBoxesDataIter():
                 image, boxes = Random_flip(image, boxes)
             if random.uniform(0, 1) > 0.5:
                 image=self.color_augmentor(image)
-            if random.uniform(0, 1) > 0.7:
-                image = Swap_change_aug(image)
-            if random.uniform(0, 1) > 0.6:
-                image = Pixel_jitter(image, max_=15)
+
+
             if random.uniform(0, 1) > 0.7:
                 image = Gray_aug(image)
 
