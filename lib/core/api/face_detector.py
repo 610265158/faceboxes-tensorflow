@@ -61,10 +61,10 @@ class FaceDetector:
         scores = scores[to_keep]
 
         ###recorver to raw image
-        scaler = np.array([cfg.MODEL.hin*scale_y,
-                           cfg.MODEL.win*scale_x,
-                           cfg.MODEL.hin*scale_y,
-                           cfg.MODEL.win*scale_x], dtype='float32')
+        scaler = np.array([cfg.MODEL.hin/scale_y,
+                           cfg.MODEL.win/scale_x,
+                           cfg.MODEL.hin/scale_y,
+                           cfg.MODEL.win/scale_x], dtype='float32')
         boxes = boxes * scaler
 
         scores=np.expand_dims(scores, 0).reshape([-1,1])
@@ -82,22 +82,20 @@ class FaceDetector:
 
         bimage=np.zeros(shape=[target_height,target_width,c],dtype=image.dtype)+np.array(cfg.DATA.PIXEL_MEAN,dtype=image.dtype)
 
-        if h <=target_height and w <=target_width:
-            bimage[:h,:w,:]=image
-            scale_x=1.
-            scale_y=1.
-        else:
-            long_side=max(h,w)
+        # if h <=target_height and w <=target_width:
+        #     bimage[:h,:w,:]=image
+        #     scale_x=1.
+        #     scale_y=1.
+        # else:
 
-            scale_x=scale_y=target_height/long_side
+        long_side=max(h,w)
 
+        scale_x=scale_y=target_height/long_side
 
+        image=cv2.resize(image, None,fx=scale_x,fy=scale_y)
 
-            image=cv2.resize(image, None,fx=scale_x,fy=scale_y)
-
-
-            h_,w_,_=image.shape
-            bimage[:h_, :w_, :] = image
+        h_,w_,_=image.shape
+        bimage[:h_, :w_, :] = image
 
 
         return bimage,scale_x,scale_y

@@ -3,7 +3,7 @@ import os
 import time
 from lib.core.api.face_detector import FaceDetector
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 detector = FaceDetector(['./model/detector.pb'])
 
 import os
@@ -23,8 +23,7 @@ def GetFileList(dir, fileList):
 
 def facedetect():
     count = 0
-    data_dir = '/home/lz/下载'
-    #data_dir ='/home/lz/coco_data/VOC/VOC2012/JPEGImages'
+    data_dir = 'yourdata'
     pics = []
     GetFileList(data_dir,pics)
 
