@@ -16,8 +16,7 @@ evaluation result on fddb
 
 | fddb   |
 | :------: | 
-|  0.948 | 
-
+|  0.94 | 
 
 
 ## requirment
@@ -63,8 +62,8 @@ and release the WIDER_train, WIDER_val and wider_face_split into ./WIDER,
  ```
     
 example `python model_eval/fddb.py --model model/detector.pb 
-                                    --data_dir 'fddb/img/' 
-                                    --split_dir fddb/FDDB-folds/ 
+                                    --data_dir 'FDDB/img/' 
+                                    --split_dir FDDB/FDDB-folds/ 
                                     --result 'result/' `
 
 

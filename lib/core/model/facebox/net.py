@@ -10,7 +10,7 @@ from lib.core.model.facebox.utils.nms import batch_non_max_suppression
 from train_config import config as cfg
 
 def facebox_arg_scope(weight_decay=0.00001,
-                     batch_norm_decay=0.99,
+                     batch_norm_decay=0.997,
                      batch_norm_epsilon=1e-5,
                      batch_norm_scale=True,
                      use_batch_norm=True,
@@ -46,7 +46,7 @@ def facebox_arg_scope(weight_decay=0.00001,
   with slim.arg_scope(
       [slim.conv2d,slim.separable_conv2d],
       weights_regularizer=slim.l2_regularizer(weight_decay),
-      weights_initializer=slim.xavier_initializer(),
+      weights_initializer=tf.glorot_normal_initializer(),
       normalizer_fn=slim.batch_norm if use_batch_norm else None,
       normalizer_params=batch_norm_params):
     with slim.arg_scope([slim.batch_norm], **batch_norm_params):
@@ -157,17 +157,17 @@ def output(feature_maps):
 
 
 
-def preprocess( image):
+def preprocess(image):
     with tf.name_scope('image_preprocess'):
         if image.dtype.base_dtype != tf.float32:
             image = tf.cast(image, tf.float32)
 
         mean = cfg.DATA.PIXEL_MEAN
-        std = np.asarray(cfg.DATA.PIXEL_STD)
+        #std = np.asarray(cfg.DATA.PIXEL_STD)
 
         image_mean = tf.constant(mean, dtype=tf.float32)
-        image_invstd = tf.constant(1.0 / std, dtype=tf.float32)
-        image = (image - image_mean)*image_invstd
+        #image_invstd = tf.constant(1.0 / std, dtype=tf.float32)
+        image = (image - image_mean)#*image_invstd
 
     return image
 

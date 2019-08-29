@@ -114,8 +114,6 @@ class FaceBoxesDataIter():
         ############## becareful with this func because there is a Infinite loop in its body
         if is_training:
 
-
-
             random_index=random.uniform(0, 1)
             if random_index>0.7:
                 image, boxes = Random_scale_withbbox(image, boxes, target_shape=[cfg.MODEL.hin, cfg.MODEL.win],
@@ -162,8 +160,6 @@ class FaceBoxesDataIter():
                 image, boxes = Random_flip(image, boxes)
             if random.uniform(0, 1) > 0.5:
                 image=self.color_augmentor(image)
-
-
             if random.uniform(0, 1) > 0.8:
                 image = Gray_aug(image)
 
