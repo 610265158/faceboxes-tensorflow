@@ -9,14 +9,17 @@ It‘s a ssd-like object detect framework, but slightly different,
 ps, the code maybe not that clear, please be patience, i am still working on it, and forgive me for my poor english :)
 
 pretrained model can be download from
-https://pan.baidu.com/s/1cUqnf9BwUVkCy0iT6EczKA ( password ty4d )
+
++ [baidu disk](https://pan.baidu.com/s/1DzbFYjcjcbXO4C494IB2TA) (code eb6b )
+
++ [google drive](https://drive.google.com/drive/folders/1mV7I9UR_DjF91Wd2P6TqMQhMIOpcBWRJ?usp=sharing)
 
 
 evaluation result on fddb
 
 | fddb   |
 | :------: | 
-|  0.94 | 
+|  0.952 | 
 
 
 ## requirment

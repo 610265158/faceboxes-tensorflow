@@ -53,7 +53,10 @@ class trainner():
                                              cfg.TRAIN.lr_decay_every_step,
                                              cfg.TRAIN.lr_value_every_step
                                              )
-            opt = tf.train.MomentumOptimizer(lr, momentum=0.9, use_nesterov=False)
+            ##opt = tf.train.MomentumOptimizer(lr, momentum=0.9, use_nesterov=False)
+
+            ###adam seems better
+            opt = tf.train.AdamOptimizer(lr)
             return opt,lr,global_step
 
     def load_weight(self):
