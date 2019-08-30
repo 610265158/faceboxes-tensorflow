@@ -17,6 +17,9 @@ pretrained model can be download from
 
 evaluation result on fddb
 
+ ![fddb](https://github.com/610265158/faceboxes-tensorflow/blob/master/figures/Figure_1.png)
+
+
 | fddb   |
 | :------: | 
 |  0.952 | 
@@ -71,7 +74,7 @@ example `python model_eval/fddb.py --model model/detector.pb
 
 
 ### visualization
-![A demo]()
+![A demo](https://github.com/610265158/faceboxes-tensorflow/blob/master/figures/example2.png)
 
 if u get a trained model, run `python tools/auto_freeze.py`, it will read the checkpoint file in ./model, and produce detector.pb, then
 
