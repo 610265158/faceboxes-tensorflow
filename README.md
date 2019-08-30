@@ -2,20 +2,18 @@
 
 ## introduction
 
-A tensorflow implement faceboxes, and the input size is 512 (1024 in the paper).
+A tensorflow implement faceboxes, and the **input size is 512 (1024 in the paper), the first conv stride is 2.**
 
-It‘s a ssd-like object detect framework, but slightly different,
+hope the codes cana help u : )
 
-ps, the code maybe not that clear, please be patience, i am still working on it, and forgive me for my poor english :)
-
-pretrained model can be download from
+Pretrained model can be download from
 
 + [baidu disk](https://pan.baidu.com/s/1DzbFYjcjcbXO4C494IB2TA) (code eb6b )
 
 + [google drive](https://drive.google.com/drive/folders/1mV7I9UR_DjF91Wd2P6TqMQhMIOpcBWRJ?usp=sharing)
 
 
-evaluation result on fddb
+Evaluation result on fddb
 
  ![fddb](https://github.com/610265158/faceboxes-tensorflow/blob/master/figures/Figure_1.png)
 
@@ -76,11 +74,11 @@ example `python model_eval/fddb.py --model model/detector.pb
 ### visualization
 ![A demo](https://github.com/610265158/faceboxes-tensorflow/blob/master/figures/example2.png)
 
-if u get a trained model, run `python tools/auto_freeze.py`, it will read the checkpoint file in ./model, and produce detector.pb, then
+If u get a trained model, run `python tools/auto_freeze.py`, it will read the checkpoint file in ./model, and produce detector.pb, then
 
 `python vis.py`
 
-u can check the code in vis.py to make it runable, it's simple.
+You can check the code in vis.py to make it runable, it's simple.
 ### reference
 # [FaceBoxes: A CPU Real-time Face Detector with High Accuracy](https://arxiv.org/abs/1708.05234)
 
