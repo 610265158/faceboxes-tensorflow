@@ -4,7 +4,7 @@
 
 A tensorflow implement faceboxes, and the **input size is 512 (1024 in the paper), the first conv stride is 2.**
 
-hope the codes cana help u : )
+Hope the codes can help you，and i am struggling with the new tf api, contact me if u have any question, 2120140200@mail.nankai.edu.cn  .
 
 Pretrained model can be download from
 
