@@ -9,7 +9,7 @@ A tensorflow implement faceboxes, and some changes has been made:
    
 **I want to name it faceboxes++ ,if u don't mind**
 
-Hope the codes can help you, and i am struggling with the new tf api, contact me if u have any question, 2120140200@mail.nankai.edu.cn  .
+
 
 Pretrained model can be download from:
 
@@ -28,6 +28,9 @@ Evaluation result on fddb
 
  **Speed: it runs over 55FPS on cpu (i7-8700K), 140fps on gpu (2080ti) with fixed input size 512.**
  **And i think the input size, the time consume and the performance is very appropriate for application :)**
+ 
+Hope the codes can help you, and i am struggling with the new tf api, contact me if u have any question,      2120140200@mail.nankai.edu.cn  .
+
 ## requirment
 
 + tensorflow1.12  
