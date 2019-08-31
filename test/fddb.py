@@ -112,36 +112,36 @@ for n in tqdm(images_to_use):
 
     boxes = face_detector(image_array, score_threshold=0.05)
 
-    ##flip det
-    flip_img=np.flip(image_array,1)
+    # ##flip det  but seems no needs for fddb
+    # flip_img=np.flip(image_array,1)
+    #
+    # boxes_flip_ = face_detector(flip_img, score_threshold=0.05)
+    # boxes_flip = np.zeros(boxes_flip_.shape)
+    # boxes_flip[:, 0] = flip_img.shape[1] - boxes_flip_[:, 2]
+    # boxes_flip[:, 1] = boxes_flip_[:, 1]
+    # boxes_flip[:, 2] = flip_img.shape[1] - boxes_flip_[:, 0]
+    # boxes_flip[:, 3] = boxes_flip_[:, 3]
+    # boxes_flip[:, 4] = boxes_flip_[:, 4]
 
-    boxes_flip_ = face_detector(flip_img, score_threshold=0.05)
-    boxes_flip = np.zeros(boxes_flip_.shape)
-    boxes_flip[:, 0] = flip_img.shape[1] - boxes_flip_[:, 2]
-    boxes_flip[:, 1] = boxes_flip_[:, 1]
-    boxes_flip[:, 2] = flip_img.shape[1] - boxes_flip_[:, 0]
-    boxes_flip[:, 3] = boxes_flip_[:, 3]
-    boxes_flip[:, 4] = boxes_flip_[:, 4]
-
-    #####
-    det = np.row_stack((boxes, boxes_flip))
-
-    dets = bbox_vote(det)
-
-    if args.is_show:
-        for bbox in dets:
-            if bbox[4] > 0.3:
-                # cv2.circle(img_show,(p[0],p[1]),3,(0,0,213),-1)
-                cv2.rectangle(image_array, (int(bbox[0]), int(bbox[1])),
-                              (int(bbox[2]), int(bbox[3])), (255, 0, 0), 7)
-        cv2.imshow('tmp', image_array)
-        cv2.waitKey(0)
+    # #####
+    # det = np.row_stack((boxes, ))
+    #
+    # dets = bbox_vote(det)
+    #
+    # if args.is_show:
+    #     for bbox in dets:
+    #         if bbox[4] > 0.3:
+    #             # cv2.circle(img_show,(p[0],p[1]),3,(0,0,213),-1)
+    #             cv2.rectangle(image_array, (int(bbox[0]), int(bbox[1])),
+    #                           (int(bbox[2]), int(bbox[3])), (255, 0, 0), 7)
+    #     cv2.imshow('tmp', image_array)
+    #     cv2.waitKey(0)
 
 
     ###
 
 
-    predictions.append((n, dets[:,0:4], dets[:,4]))
+    predictions.append((n, boxes[:,0:4], boxes[:,4]))
 
 
 with open(os.path.join(RESULT_DIR, 'detections.txt'), 'w') as f:

@@ -18,16 +18,10 @@ from lib.dataset.augmentor.augmentation import ColorDistort,\
     Fill_img,\
     Gray_aug,\
     baidu_aug,\
-    dsfd_aug
-
+    dsfd_aug,\
+    Pixel_jitter
 from lib.core.model.facebox.training_target_creation import get_training_targets
 from train_config import config as cfg
-
-
-
-
-
-
 
 
 class data_info(object):
@@ -160,6 +154,10 @@ class FaceBoxesDataIter():
                 image, boxes = Random_flip(image, boxes)
             if random.uniform(0, 1) > 0.5:
                 image=self.color_augmentor(image)
+
+
+            if random.uniform(0, 1) > 0.5:
+                image = Pixel_jitter(image, 15)
             if random.uniform(0, 1) > 0.8:
                 image = Gray_aug(image)
 

@@ -35,22 +35,18 @@ class FaceDetector:
                 that represents a RGB image.
             score_threshold: a float number.
         Returns:
-            boxes: a float numpy array of shape [num_faces, 4].
-            scores: a float numpy array of shape [num_faces].
+            boxes: a float numpy array of shape [num_faces, 5].
 
-        Note that box coordinates are in the order: ymin, xmin, ymax, xmax!
         """
 
         image_fornet,scale_x,scale_y=self.preprocess(image,target_width=cfg.MODEL.win,target_height=cfg.MODEL.hin)
 
-
         image_fornet = np.expand_dims(image_fornet, 0)
 
-        start = time.time()
         boxes, scores, num_boxes = self._sess.run(
             self.output_ops, feed_dict={self.input_image: image_fornet,self.training:False}
         )
-        #print('facebox detect cost', time.time() - start)
+
         num_boxes = num_boxes[0]
         boxes = boxes[0][:num_boxes]
 
@@ -79,14 +75,7 @@ class FaceDetector:
         ###sometimes use in objs detects
         h,w,c=image.shape
 
-
         bimage=np.zeros(shape=[target_height,target_width,c],dtype=image.dtype)+np.array(cfg.DATA.PIXEL_MEAN,dtype=image.dtype)
-
-        # if h <=target_height and w <=target_width:
-        #     bimage[:h,:w,:]=image
-        #     scale_x=1.
-        #     scale_y=1.
-        # else:
 
         long_side=max(h,w)
 
@@ -96,7 +85,6 @@ class FaceDetector:
 
         h_,w_,_=image.shape
         bimage[:h_, :w_, :] = image
-
 
         return bimage,scale_x,scale_y
 
@@ -131,7 +119,7 @@ class FaceDetector:
 
         def init_pb(model_path):
             config = tf.ConfigProto()
-            config.gpu_options.per_process_gpu_memory_fraction = 0.2
+            config.gpu_options.allow_growth = True
             compute_graph = tf.Graph()
             compute_graph.as_default()
             sess = tf.Session(config=config)

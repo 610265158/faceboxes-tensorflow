@@ -2,11 +2,16 @@
 
 ## introduction
 
-A tensorflow implement faceboxes, and the **input size is 512 (1024 in the paper), the first conv stride is 2.**
+A tensorflow implement faceboxes, and some changes has been made:
 
-Hope the codes can help you，and i am struggling with the new tf api, contact me if u have any question, 2120140200@mail.nankai.edu.cn  .
+   1. input size is 512 (1024 in the paper), then the first conv stride is 2. 
+   2. anchor based sample is used in data augmentaion.
+   
+**I want to name it faceboxes++ ,if u don't mind**
 
-Pretrained model can be download from
+Hope the codes can help you, and i am struggling with the new tf api, contact me if u have any question, 2120140200@mail.nankai.edu.cn  .
+
+Pretrained model can be download from:
 
 + [baidu disk](https://pan.baidu.com/s/1DzbFYjcjcbXO4C494IB2TA) (code eb6b )
 
@@ -20,9 +25,11 @@ Evaluation result on fddb
 
 | fddb   |
 | :------: | 
-|  0.952 | 
+|  0.955 | 
 
-
+ **Speed: it runs over 55FPS on cpu (i7-8700K), 140fps on gpu (2080ti) with fixed input size 512.
+ And i think the input size, the time consume and the performance is very appropriate for application :),
+ **
 ## requirment
 
 + tensorflow1.12  
