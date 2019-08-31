@@ -22,14 +22,12 @@ Evaluation result on fddb
 
  ![fddb](https://github.com/610265158/faceboxes-tensorflow/blob/master/figures/Figure_1.png)
 
-
 | fddb   |
 | :------: | 
 |  0.955 | 
 
- **Speed: it runs over 55FPS on cpu (i7-8700K), 140fps on gpu (2080ti) with fixed input size 512.
- And i think the input size, the time consume and the performance is very appropriate for application :),
- **
+ **Speed: it runs over 55FPS on cpu (i7-8700K), 140fps on gpu (2080ti) with fixed input size 512.**
+ **And i think the input size, the time consume and the performance is very appropriate for application :)**
 ## requirment
 
 + tensorflow1.12  
