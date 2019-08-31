@@ -28,9 +28,9 @@ config.TRAIN.vis=False
 
 config.MODEL = edict()
 config.MODEL.model_path = './model/'                                    # save directory
-config.MODEL.continue_train=True                                       ### revover from a trained model
+config.MODEL.continue_train=False                                       ### revover from a trained model
 config.MODEL.net_structure=None                                         ######
-config.MODEL.pretrained_model='./model/epoch_157L2_0.0005.ckpt'                                      ######
+config.MODEL.pretrained_model=None                                    ######
 #####
 config.MODEL.hin = 512                                                  # input size during training , 512  different with the paper
 config.MODEL.win = 512
