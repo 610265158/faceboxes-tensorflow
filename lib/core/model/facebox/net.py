@@ -76,12 +76,28 @@ def inception_block(x,scope):
 
     return net_out
 
+
+
+### RDCL in the papre
+# def RDCL(net_in):
+#     with tf.name_scope('RDCL'):
+#         net = slim.conv2d(net_in, 24, [7, 7], stride=2,activation_fn=tf.nn.crelu, scope='init_conv')
+#         net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool')
+#         net = slim.conv2d(net, 64, [5, 5], stride=2,activation_fn=tf.nn.crelu,scope='conv1x1_before')
+#         net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool2')
+#         return net
+
+
+### the new one
 def RDCL(net_in):
     with tf.name_scope('RDCL'):
-        net = slim.conv2d(net_in, 24, [7, 7], stride=2,activation_fn=tf.nn.crelu, scope='init_conv')
-        net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool')
-        net = slim.conv2d(net, 64, [5, 5], stride=2,activation_fn=tf.nn.crelu,scope='conv1x1_before')
-        net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool2')
+        net = slim.conv2d(net_in, 12, [7, 7], stride=2,activation_fn=tf.nn.relu, scope='init_conv1')
+        net = slim.conv2d(net, 24, [3, 3], stride=2, activation_fn=tf.nn.crelu, scope='init_conv2')
+        #net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool')
+
+        net = slim.conv2d(net, 32, [3, 3], stride=2,activation_fn=tf.nn.relu,scope='conv1x1_before1')
+        net = slim.conv2d(net, 64, [3, 3], stride=2, activation_fn=tf.nn.crelu, scope='conv1x1_before2')
+        #net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool2')
         return net
 
 def MSCL(net):
