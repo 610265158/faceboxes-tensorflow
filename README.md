@@ -60,7 +60,7 @@ Hope the codes can help you, and i am struggling with the new tf api, contact me
 ### train
 1. download widerface data from http://shuoyang1213.me/WIDERFACE/
 and release the WIDER_train, WIDER_val and wider_face_split into ./WIDER, 
-2. download fddb and release the data into ./FDDB
+2. download fddb， and release FDDB-folds into ./FDDB ， 2002,2003 into ./FDDB/img
 3. then run
    ```python prepare_data.py```it will produce train.txt and val.txt
 
