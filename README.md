@@ -48,7 +48,7 @@ Hope the codes can help you, and i am struggling with the new tf api, contact me
 
 ## requirment
 
-+ tensorflow1.12  
++ tensorflow1.14  
 
 + tensorpack (for data provider)
 
