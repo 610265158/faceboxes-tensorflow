@@ -41,7 +41,7 @@ Evaluation result on fddb
 | :------: | 
 |  0.960 | 
 
- **Speed: it runs over 70FPS on cpu (i7-8700K), 140fps on gpu (2080ti) with fixed input size 512, tf1.14, multi thread.**
+ **Speed: it runs over 70FPS on cpu (i7-8700K),30FPS (i5-7200U), 140fps on gpu (2080ti) with fixed input size 512, tf1.14, multi thread.**
  **And i think the input size, the time consume and the performance is very appropriate for application :)**
  
 Hope the codes can help you, and i am struggling with the new tf api, contact me if u have any question,      2120140200@mail.nankai.edu.cn  .
