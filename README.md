@@ -2,7 +2,7 @@
 
 ## introduction
 
-A tensorflow implement faceboxes, and some changes has been made in RDCL module:
+A tensorflow implement faceboxes. And some changes has been made in RDCL module, to achieve a better performance，and runs faster:
 
    1. input size is 512 (1024 in the paper), then the first conv stride is 2, kernel size 7x7x12.
    2. replace the two maxpoll by conv 3x3 stride 2
@@ -24,7 +24,6 @@ A tensorflow implement faceboxes, and some changes has been made in RDCL module:
 
    ```
 **I want to name it faceboxes++ ,if u don't mind**
-
 
 
 Pretrained model can be download from:
