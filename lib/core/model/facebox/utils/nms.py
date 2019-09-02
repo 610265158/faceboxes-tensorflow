@@ -1,5 +1,5 @@
 import tensorflow as tf
-from lib.core.model.facebox.constants import PARALLEL_ITERATIONS
+from train_config import config as cfg
 
 
 def batch_non_max_suppression(
@@ -45,7 +45,7 @@ def batch_non_max_suppression(
     boxes, scores, num_detections = tf.map_fn(
         fn, [boxes, scores],
         dtype=(tf.float32, tf.float32, tf.int32),
-        parallel_iterations=PARALLEL_ITERATIONS,
+        parallel_iterations=cfg.TEST.parallel_iterations,
         back_prop=False, swap_memory=False, infer_shape=True
     )
     return boxes, scores, num_detections

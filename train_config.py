@@ -51,6 +51,7 @@ config.TEST = edict()
 config.TEST.score_threshold=0.05
 config.TEST.iou_threshold=0.3
 config.TEST.max_boxes=100
+config.TEST.parallel_iterations=8
 
 config.DATA = edict()
 config.DATA.root_path=''
