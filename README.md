@@ -5,8 +5,8 @@
 A tensorflow implement faceboxes. And some changes has been made in RDCL module, to achieve a better performance，and runs faster:
 
    1. input size is 512 (1024 in the paper), then the first conv stride is 2, kernel size 7x7x12.
-   2. replace the two maxpoll by conv 3x3 stride 2
-   3. replace the second 5x5 kernel with two 3x3 kernel
+   2. replace the first maxpool by conv 3x3x24 stride 2
+   3. replace the second 5x5 stride2 conv and maxpool by two 3x3 stride 2 conv
    4. anchor based sample is used in data augmentaion.
    
    
@@ -15,11 +15,10 @@ A tensorflow implement faceboxes. And some changes has been made in RDCL module,
        with tf.name_scope('RDCL'):
         net = slim.conv2d(net_in, 12, [7, 7], stride=2,activation_fn=tf.nn.relu, scope='init_conv1')
         net = slim.conv2d(net, 24, [3, 3], stride=2, activation_fn=tf.nn.crelu, scope='init_conv2')
-        #net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool')
-
+       
         net = slim.conv2d(net, 32, [3, 3], stride=2,activation_fn=tf.nn.relu,scope='conv1x1_before1')
         net = slim.conv2d(net, 64, [3, 3], stride=2, activation_fn=tf.nn.crelu, scope='conv1x1_before2')
-        #net = tf.nn.max_pool(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding="SAME", name='init_pool2')
+        
         return net
 
    ```
