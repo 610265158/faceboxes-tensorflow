@@ -250,7 +250,7 @@ class FaceBoxes(tf.keras.Model):
 
         self.head=FaceBoxesHead(kernel_regularizer=kernel_regularizer)
 
-
+    @tf.function
     def call(self,images, training):
 
         fms=[]
@@ -287,7 +287,6 @@ class FaceBoxes(tf.keras.Model):
         image = (image - image_mean)  # *image_invstd
 
         return image
-
 
     def get_predictions(self,box_encodings,cla,anchors, score_threshold=cfg.TEST.score_threshold, iou_threshold=cfg.TEST.iou_threshold, max_boxes=cfg.TEST.max_boxes):
         """Postprocess outputs of the network.
@@ -328,7 +327,7 @@ class FaceBoxes(tf.keras.Model):
         return res
 
 
-
+@tf.function
 def calculate_loss(reg_targets,matches,loc_predict,cls_predict):
     #### loss
 
