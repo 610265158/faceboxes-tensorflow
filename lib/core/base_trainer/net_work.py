@@ -91,6 +91,8 @@ class Train(object):
       loss = self.compute_loss(reg_target,matches, loc_predictions,cls_predictions)
 
     gradients = tape.gradient(loss, self.model.trainable_variables)
+    gradients = [(tf.clip_by_value(grad, -5.0, 5.0))
+                 for grad in gradients]
     self.optimizer.apply_gradients(zip(gradients,
                                        self.model.trainable_variables))
 
