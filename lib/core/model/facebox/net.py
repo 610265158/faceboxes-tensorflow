@@ -23,7 +23,7 @@ class RDCL(tf.keras.Model):
 
     def __init__(self,
                  kernel_regularizer=None,
-                 kernel_initializer='glorot_norm'):
+                 kernel_initializer='glorot_normal'):
 
         super(RDCL, self).__init__()
 
@@ -74,7 +74,7 @@ class Inception(tf.keras.Model):
 
     def __init__(self,
                  kernel_regularizer=None,
-                 kernel_initializer='glorot_norm'):
+                 kernel_initializer='glorot_normal'):
         super(Inception, self).__init__()
         self.conv1 = tf.keras.layers.Conv2D(filters=32,
                                             kernel_size=(1, 1),
@@ -161,7 +161,7 @@ class DecreaseBlock(tf.keras.Model):
 
     def __init__(self,
                  kernel_regularizer=None,
-                 kernel_initializer='glorot_norm'):
+                 kernel_initializer='glorot_normal'):
         super(DecreaseBlock, self).__init__()
         self.conv1 = tf.keras.layers.Conv2D(filters=128,
                                             kernel_size=(1, 1),
@@ -195,7 +195,7 @@ class DecreaseBlock(tf.keras.Model):
 class FaceBoxesHead(tf.keras.Model):
     def __init__(self,
                  kernel_regularizer=None,
-                 kernel_initializer='glorot_norm'):
+                 kernel_initializer='glorot_normal'):
         super(FaceBoxesHead, self).__init__()
         self.conv_reg_1 = tf.keras.layers.Conv2D(filters=4 * 21,
                                                  kernel_size=(3, 3),
@@ -280,7 +280,7 @@ class FaceBoxesHead(tf.keras.Model):
 class FaceBoxes(tf.keras.Model):
     def __init__(self,
                  kernel_regularizer=tf.keras.regularizers.l2(cfg.TRAIN.weight_decay_factor),
-                 kernel_initializer='glorot_norm'):
+                 kernel_initializer='glorot_normal'):
         super(FaceBoxes, self).__init__()
 
         self.RDCL=RDCL(kernel_regularizer=kernel_regularizer,
