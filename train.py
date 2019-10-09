@@ -27,7 +27,7 @@ def main():
     epochs=cfg.TRAIN.epoch
     batch_size=cfg.TRAIN.batch_size
 
-    enable_function=True
+    enable_function=False
 
     gpus = tf.config.experimental.list_physical_devices('GPU')
     if gpus:

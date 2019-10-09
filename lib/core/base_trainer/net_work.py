@@ -60,7 +60,7 @@ class Train(object):
       return self.lr_val_every_epoch[1]
 
     ##decrease
-    if epoch < self.lr_decay_every_epoch[2]:
+    if epoch >= self.lr_decay_every_epoch[1] and epoch < self.lr_decay_every_epoch[2]:
       return self.lr_val_every_epoch[2]
     if epoch >= self.lr_decay_every_epoch[2] and epoch < self.lr_decay_every_epoch[3]:
       return self.lr_val_every_epoch[3]

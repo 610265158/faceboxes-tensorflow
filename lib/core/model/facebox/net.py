@@ -10,6 +10,15 @@ from lib.core.model.facebox.utils.nms import batch_non_max_suppression
 
 from train_config import config as cfg
 
+
+
+
+def batch_norm():
+    return tf.keras.layers.BatchNormalization(fused=True,momentum=0.997,epsilon=1e-5)
+
+
+
+
 class RDCL(tf.keras.Model):
 
     def __init__(self,kernel_regularizer=None):
@@ -20,14 +29,14 @@ class RDCL(tf.keras.Model):
                                               padding='same',
                                               kernel_regularizer=kernel_regularizer,
                                               use_bias=False)
-        self.bn1_1=tf.keras.layers.BatchNormalization(fused=True)
+        self.bn1_1=batch_norm()
         self.conv1_2 = tf.keras.layers.Conv2D(filters=24,
                                               kernel_size=(3, 3),
                                               strides=2,
                                               padding='same',
                                               kernel_regularizer=kernel_regularizer,
                                               use_bias=False)
-        self.bn1_2 = tf.keras.layers.BatchNormalization(fused=True)
+        self.bn1_2 = batch_norm()
 
         self.conv2_1 = tf.keras.layers.Conv2D(filters=32,
                                               kernel_size=(3, 3),
@@ -35,14 +44,14 @@ class RDCL(tf.keras.Model):
                                               padding='same',
                                               kernel_regularizer=kernel_regularizer,
                                               use_bias=False)
-        self.bn2_1 = tf.keras.layers.BatchNormalization(fused=True)
+        self.bn2_1 = batch_norm()
         self.conv2_2 = tf.keras.layers.Conv2D(filters=64,
                                               kernel_size=(3, 3),
                                               strides=2,
                                               padding='same',
                                               kernel_regularizer=kernel_regularizer,
                                               use_bias=False)
-        self.bn2_2 = tf.keras.layers.BatchNormalization(fused=True)
+        self.bn2_2 = batch_norm()
 
 
     def __call__(self,x,training=False):
@@ -63,7 +72,7 @@ class Inception(tf.keras.Model):
                                             padding='same',
                                             kernel_regularizer=kernel_regularizer,
                                             use_bias=False)
-        self.bn1 = tf.keras.layers.BatchNormalization(fused=True)
+        self.bn1 = batch_norm()
 
 
         self.avgpool=tf.keras.layers.AveragePooling2D(pool_size=(3,3),
@@ -75,7 +84,7 @@ class Inception(tf.keras.Model):
                                             padding='same',
                                             kernel_regularizer=kernel_regularizer,
                                             use_bias=False)
-        self.bn2 = tf.keras.layers.BatchNormalization(fused=True)
+        self.bn2 = batch_norm()
 
         self.conv3_1 = tf.keras.layers.Conv2D(filters=24,
                                               kernel_size=(1, 1),
@@ -83,14 +92,14 @@ class Inception(tf.keras.Model):
                                               padding='same',
                                               kernel_regularizer=kernel_regularizer,
                                               use_bias=False)
-        self.bn3_1 = tf.keras.layers.BatchNormalization(fused=True)
+        self.bn3_1 = batch_norm()
         self.conv3_2 = tf.keras.layers.Conv2D(filters=32,
                                               kernel_size=(3, 3),
                                               strides=1,
                                               padding='same',
                                               kernel_regularizer=kernel_regularizer,
                                               use_bias=False)
-        self.bn3_2 = tf.keras.layers.BatchNormalization(fused=True)
+        self.bn3_2 = batch_norm()
 
         self.conv4_1 = tf.keras.layers.Conv2D(filters=24,
                                               kernel_size=(1, 1),
@@ -98,21 +107,21 @@ class Inception(tf.keras.Model):
                                               padding='same',
                                               kernel_regularizer=kernel_regularizer,
                                               use_bias=False)
-        self.bn4_1 = tf.keras.layers.BatchNormalization(fused=True)
+        self.bn4_1 = batch_norm()
         self.conv4_2 = tf.keras.layers.Conv2D(filters=32,
                                               kernel_size=(3, 3),
                                               strides=1,
                                               padding='same',
                                               kernel_regularizer=kernel_regularizer,
                                               use_bias=False)
-        self.bn4_2 = tf.keras.layers.BatchNormalization(fused=True)
+        self.bn4_2 = batch_norm()
         self.conv4_3 = tf.keras.layers.Conv2D(filters=32,
                                               kernel_size=(3, 3),
                                               strides=1,
                                               padding='same',
                                               kernel_regularizer=kernel_regularizer,
                                               use_bias=False)
-        self.bn4_3 = tf.keras.layers.BatchNormalization(fused=True)
+        self.bn4_3 = batch_norm()
 
 
     def __call__(self, x,training=False):
@@ -141,7 +150,7 @@ class DecreaseBlock(tf.keras.Model):
                                             padding='same',
                                             kernel_regularizer=kernel_regularizer,
                                             use_bias=False)
-        self.bn1 = tf.keras.layers.BatchNormalization(fused=True)
+        self.bn1 = batch_norm()
 
         self.conv2 = tf.keras.layers.Conv2D(filters=256,
                                             kernel_size=(3, 3),
@@ -149,7 +158,7 @@ class DecreaseBlock(tf.keras.Model):
                                             padding='same',
                                             kernel_regularizer=kernel_regularizer,
                                             use_bias=False)
-        self.bn2 = tf.keras.layers.BatchNormalization(fused=True)
+        self.bn2 = batch_norm()
 
 
 
