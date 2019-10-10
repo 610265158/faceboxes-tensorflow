@@ -7,10 +7,6 @@ from lib.core.api.face_detector import FaceDetector
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-
-
-
-
 import os
 def GetFileList(dir, fileList):
     newDir = dir
