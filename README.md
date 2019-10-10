@@ -88,9 +88,9 @@ and release the WIDER_train, WIDER_val and wider_face_split into ./WIDER,
     `...../9_Press_Conference_Press_Conference_9_659.jpg| 483(xmin),195(ymin),735(xmax),543(ymax),1(class) ......` 
     one line for one pic, **caution! class should start from 1, 0 means bg**)
     
-2.  set config.MODEL.pretrained_model='your model pretrained', in train_config.py
+2.  set config.MODEL.pretrained_model='./model/detector/variables/variables', in train_config.py
 
-3. adjust the lr rate policy
+3.  adjust the lr rate policy
 
 4. `python train.py`
 
