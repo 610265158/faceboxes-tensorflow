@@ -29,7 +29,7 @@ Pretrained model can be download from:
 
 + [baidu disk](https://pan.baidu.com/s/1DzbFYjcjcbXO4C494IB2TA) (code eb6b )
 
-+ [google drive](https://drive.google.com/drive/folders/1mV7I9UR_DjF91Wd2P6TqMQhMIOpcBWRJ?usp=sharing)
++ [google drive](https://drive.google.com/open?id=1mV7I9UR_DjF91Wd2P6TqMQhMIOpcBWRJ)
 
 Evaluation result on fddb
 
