@@ -48,7 +48,7 @@ Evaluation result on fddb
 |  0.96 | 
 
 
- **Speed: it runs over 70FPS on cpu (i7-8700K), 30FPS (i5-7200U), 140fps on gpu (2080ti) with fixed input size 512, tf1.14, multi thread.**
+ **Speed: it runs over 70FPS on cpu (i7-8700K), 30FPS (i5-7200U), 140fps on gpu (2080ti) with fixed input size 512, tf2.0, multi thread.**
  **And i think the input size, the time consume and the performance is very appropriate for application :)**
  
 Hope the codes can help you, and i am struggling with the new tf api, contact me if u have any question,      2120140200@mail.nankai.edu.cn  .
@@ -90,7 +90,7 @@ and release the WIDER_train, WIDER_val and wider_face_split into ./WIDER,
     
 2.  set config.MODEL.pretrained_model='./model/detector/variables/variables', in train_config.py
 
-3.  adjust the lr rate policy
+3.  adjust the lr policy
 
 4. `python train.py`
 
@@ -99,13 +99,13 @@ and release the WIDER_train, WIDER_val and wider_face_split into ./WIDER,
 ```
     python test/fddb.py [--model [TRAINED_MODEL]] [--data_dir [DATA_DIR]]
                           [--split_dir [SPLIT_DIR]] [--result [RESULT_DIR]]
-    --model              Path of the saved model,default ./model/detector.pb
+    --model              Path of the saved model,default ./model/detector
     --data_dir           Path of fddb all images
     --split_dir          Path of fddb folds
     --result             Path to save fddb results
  ```
     
-example `python model_eval/fddb.py --model model/detector/ 
+example `python model_eval/fddb.py --model model/detector 
                                     --data_dir 'FDDB/img/' 
                                     --split_dir FDDB/FDDB-folds/ 
                                     --result 'result/' `
@@ -114,10 +114,10 @@ example `python model_eval/fddb.py --model model/detector/
 ### visualization
 ![A demo](https://github.com/610265158/faceboxes-tensorflow/blob/master/figures/example2.png)
 
-2. `python vis.py  --img_dir your_images_dir --model model/detector/ `
+2. `python vis.py  --img_dir your_images_dir --model model/detector `
 
 3. or use a camera:
-`python vis.py --cam_id 0 --model model/detector/`
+`python vis.py --cam_id 0 --model model/detector`
 
 You can check the code in vis.py to make it runable, it's simple.
 
