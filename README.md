@@ -3,12 +3,14 @@
 ## introduction
 
 A tensorflow 2.0 implement faceboxes. 
+
+ **CAUTION: this is the tensorflow2 branch, 
+ if you need to work on tensorflow1, 
+ please switch to tf1 branch**
+ 
+ 
 And some changes has been made in RDCL module, 
 to achieve a better performance and run faster:
-
- ** caution: this is the tensorflow2 branch, 
- if you need to work on tensorflow1, 
- please switch to tf1 branch **
  
    1. input size is 512 (1024 in the paper), then the first conv stride is 2, kernel size 7x7x12.
    2. replace the first maxpool by conv 3x3x24 stride 2
