@@ -121,5 +121,5 @@ You can check the code in vis.py to make it runable, it's simple.
 
 
 ### reference
-# [FaceBoxes: A CPU Real-time Face Detector with High Accuracy](https://arxiv.org/abs/1708.05234)
+### [FaceBoxes: A CPU Real-time Face Detector with High Accuracy](https://arxiv.org/abs/1708.05234)
 
