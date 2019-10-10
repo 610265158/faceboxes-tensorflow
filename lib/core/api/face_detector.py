@@ -14,8 +14,7 @@ class FaceDetector:
         """
         self.model=FaceBoxes(kernel_regularizer=None)
         image = np.zeros(shape=(1, 512, 512, 3), dtype=np.float32)
-        self.model.inference(image)
-        self.model.load_weights(model_path)
+        self.model=tf.saved_model.load(model_path)
 
 
 

@@ -22,8 +22,8 @@ def GetFileList(dir, fileList):
 
 
 def image_demo(data_dir):
-    weights = args.model
-    detector = FaceDetector(weights)
+    args.model
+    detector = FaceDetector(args.model)
 
     count = 0
     pics = []

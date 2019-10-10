@@ -294,7 +294,7 @@ class FaceBoxes(tf.keras.Model):
         self.head=FaceBoxesHead(kernel_regularizer=kernel_regularizer,
                                 kernel_initializer=kernel_initializer)
 
-    @tf.function
+
     def call(self,images, training):
 
         fms=[]
@@ -362,11 +362,10 @@ class FaceBoxes(tf.keras.Model):
 
         return {'boxes': boxes, 'scores': scores, 'num_boxes': num_detections}
 
-    @tf.function
+    @tf.function(input_signature=[tf.TensorSpec([None,None,None,None], tf.float32)])
     def inference(self,images):
-        start=time.time()
+
         reg_prediction,cls_prediction=self.call(images,False)
-        # print(time.time()-start)
         res=self.get_predictions(reg_prediction,cls_prediction,anchors=cfg.MODEL.anchors)
         return res
 
@@ -374,11 +373,6 @@ class FaceBoxes(tf.keras.Model):
 @tf.function
 def calculate_loss(reg_targets,matches,loc_predict,cls_predict):
     #### loss
-
-
-
-
-
 
     # whether anchor is matched
     is_matched = tf.greater_equal(matches, 0)

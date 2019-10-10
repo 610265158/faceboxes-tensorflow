@@ -20,8 +20,6 @@ logger.info('The trainer start')
 
 setproctitle.setproctitle("faceboxes")
 
-
-
 def main():
 
     epochs=cfg.TRAIN.epoch
@@ -64,8 +62,6 @@ def main():
     ### build dataiter
     train_ds = DataIter(cfg.DATA.root_path, cfg.DATA.train_txt_path, True)
     test_ds = DataIter(cfg.DATA.root_path, cfg.DATA.val_txt_path, False)
-
-
 
 
     ### it's a tensorpack data iter, produce a batch every iter
