@@ -105,7 +105,7 @@ and release the WIDER_train, WIDER_val and wider_face_split into ./WIDER,
     --result             Path to save fddb results
  ```
     
-example `python model_eval/fddb.py --model model/epoch_36_val_loss2.926745_keras.h5 
+example `python model_eval/fddb.py --model model/detector/ 
                                     --data_dir 'FDDB/img/' 
                                     --split_dir FDDB/FDDB-folds/ 
                                     --result 'result/' `
@@ -114,10 +114,10 @@ example `python model_eval/fddb.py --model model/epoch_36_val_loss2.926745_keras
 ### visualization
 ![A demo](https://github.com/610265158/faceboxes-tensorflow/blob/master/figures/example2.png)
 
-2. `python vis.py  --img_dir your_images_dir --model your_keras.h5 `
+2. `python vis.py  --img_dir your_images_dir --model model/detector/ `
 
 3. or use a camera:
-`python vis.py --cam_id 0 --model your_keras.h5`
+`python vis.py --cam_id 0 --model model/detector/`
 
 You can check the code in vis.py to make it runable, it's simple.
 
