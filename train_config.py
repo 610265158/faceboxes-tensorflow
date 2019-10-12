@@ -10,7 +10,7 @@ config.TRAIN = edict()
 
 #### below are params for dataiter
 config.TRAIN.num_gpu = 1
-config.TRAIN.process_num = 2               ####process num
+config.TRAIN.process_num = 2                  ####process num
 config.TRAIN.prefetch_size = 30               ####Q size for data provider
 
 config.TRAIN.batch_size = 32
@@ -29,6 +29,7 @@ config.MODEL = edict()
 config.MODEL.model_path = './model/'                                    # save directory
 config.MODEL.pretrained_model=None                                      ######
 #####
+config.MODEL.Separable=False                                            ### use SeparableConv  it will be faster
 config.MODEL.hin = 512                                                  # input size during training , 512  different with the paper
 config.MODEL.win = 512
 config.MODEL.feature_maps_size=[[32,32],[16,16],[8,8]]
