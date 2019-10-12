@@ -362,7 +362,7 @@ class FaceBoxes(tf.keras.Model):
 
         return {'boxes': boxes, 'scores': scores, 'num_boxes': num_detections}
 
-    @tf.function(input_signature=[tf.TensorSpec([None,None,None,None], tf.float32)])
+    @tf.function(input_signature=[tf.TensorSpec([None,cfg.MODEL.hin,cfg.MODEL.win,3], tf.float32)])
     def inference(self,images):
 
         reg_prediction,cls_prediction=self.call(images,False)
