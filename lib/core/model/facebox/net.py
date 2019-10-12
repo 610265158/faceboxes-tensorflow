@@ -22,7 +22,6 @@ def batch_norm():
 class RDCL(tf.keras.Model):
 
     def __init__(self,
-                 kernel_regularizer=None,
                  kernel_initializer='glorot_normal'):
 
         super(RDCL, self).__init__()
@@ -31,7 +30,6 @@ class RDCL(tf.keras.Model):
                                               kernel_size=(7, 7),
                                               strides=2,
                                               padding='same',
-                                              kernel_regularizer=kernel_regularizer,
                                               use_bias=False,
                                               kernel_initializer=kernel_initializer)
         self.bn1_1=batch_norm()
@@ -39,7 +37,6 @@ class RDCL(tf.keras.Model):
                                               kernel_size=(3, 3),
                                               strides=2,
                                               padding='same',
-                                              kernel_regularizer=kernel_regularizer,
                                               use_bias=False,
                                               kernel_initializer=kernel_initializer)
         self.bn1_2 = batch_norm()
@@ -48,7 +45,6 @@ class RDCL(tf.keras.Model):
                                               kernel_size=(3, 3),
                                               strides=2,
                                               padding='same',
-                                              kernel_regularizer=kernel_regularizer,
                                               use_bias=False,
                                               kernel_initializer=kernel_initializer)
         self.bn2_1 = batch_norm()
@@ -56,7 +52,6 @@ class RDCL(tf.keras.Model):
                                               kernel_size=(3, 3),
                                               strides=2,
                                               padding='same',
-                                              kernel_regularizer=kernel_regularizer,
                                               use_bias=False,
                                               kernel_initializer=kernel_initializer)
         self.bn2_2 = batch_norm()
@@ -73,14 +68,12 @@ class RDCL(tf.keras.Model):
 class Inception(tf.keras.Model):
 
     def __init__(self,
-                 kernel_regularizer=None,
                  kernel_initializer='glorot_normal'):
         super(Inception, self).__init__()
         self.conv1 = tf.keras.layers.Conv2D(filters=32,
                                             kernel_size=(1, 1),
                                             strides=1,
                                             padding='same',
-                                            kernel_regularizer=kernel_regularizer,
                                             use_bias=False,
                                             kernel_initializer=kernel_initializer)
         self.bn1 = batch_norm()
@@ -93,7 +86,6 @@ class Inception(tf.keras.Model):
                                             kernel_size=(1, 1),
                                             strides=1,
                                             padding='same',
-                                            kernel_regularizer=kernel_regularizer,
                                             use_bias=False,
                                             kernel_initializer=kernel_initializer)
         self.bn2 = batch_norm()
@@ -102,7 +94,6 @@ class Inception(tf.keras.Model):
                                               kernel_size=(1, 1),
                                               strides=1,
                                               padding='same',
-                                              kernel_regularizer=kernel_regularizer,
                                               use_bias=False,
                                               kernel_initializer=kernel_initializer)
         self.bn3_1 = batch_norm()
@@ -110,7 +101,6 @@ class Inception(tf.keras.Model):
                                               kernel_size=(3, 3),
                                               strides=1,
                                               padding='same',
-                                              kernel_regularizer=kernel_regularizer,
                                               use_bias=False,
                                               kernel_initializer=kernel_initializer)
         self.bn3_2 = batch_norm()
@@ -119,7 +109,6 @@ class Inception(tf.keras.Model):
                                               kernel_size=(1, 1),
                                               strides=1,
                                               padding='same',
-                                              kernel_regularizer=kernel_regularizer,
                                               use_bias=False,
                                               kernel_initializer=kernel_initializer)
         self.bn4_1 = batch_norm()
@@ -127,7 +116,6 @@ class Inception(tf.keras.Model):
                                               kernel_size=(3, 3),
                                               strides=1,
                                               padding='same',
-                                              kernel_regularizer=kernel_regularizer,
                                               use_bias=False,
                                               kernel_initializer=kernel_initializer)
         self.bn4_2 = batch_norm()
@@ -135,7 +123,6 @@ class Inception(tf.keras.Model):
                                               kernel_size=(3, 3),
                                               strides=1,
                                               padding='same',
-                                              kernel_regularizer=kernel_regularizer,
                                               use_bias=False,
                                               kernel_initializer=kernel_initializer)
         self.bn4_3 = batch_norm()
@@ -160,14 +147,12 @@ class Inception(tf.keras.Model):
 class DecreaseBlock(tf.keras.Model):
 
     def __init__(self,
-                 kernel_regularizer=None,
                  kernel_initializer='glorot_normal'):
         super(DecreaseBlock, self).__init__()
         self.conv1 = tf.keras.layers.Conv2D(filters=128,
                                             kernel_size=(1, 1),
                                             strides=1,
                                             padding='same',
-                                            kernel_regularizer=kernel_regularizer,
                                             use_bias=False,
                                             kernel_initializer=kernel_initializer)
         self.bn1 = batch_norm()
@@ -176,7 +161,6 @@ class DecreaseBlock(tf.keras.Model):
                                             kernel_size=(3, 3),
                                             strides=2,
                                             padding='same',
-                                            kernel_regularizer=kernel_regularizer,
                                             use_bias=False,
                                             kernel_initializer=kernel_initializer)
         self.bn2 = batch_norm()
@@ -194,7 +178,6 @@ class DecreaseBlock(tf.keras.Model):
 
 class FaceBoxesHead(tf.keras.Model):
     def __init__(self,
-                 kernel_regularizer=None,
                  kernel_initializer='glorot_normal'):
         super(FaceBoxesHead, self).__init__()
         self.conv_reg_1 = tf.keras.layers.Conv2D(filters=4 * 21,
@@ -202,14 +185,12 @@ class FaceBoxesHead(tf.keras.Model):
                                                  strides=1,
                                                  padding='same',
                                                  use_bias=True,
-                                                 kernel_regularizer=kernel_regularizer,
                                                  kernel_initializer=kernel_initializer)
         self.conv_cls_1 = tf.keras.layers.Conv2D(filters=2 * 21,
                                                  kernel_size=(3, 3),
                                                  strides=1,
                                                  padding='same',
                                                  use_bias=True,
-                                                 kernel_regularizer=kernel_regularizer,
                                                  kernel_initializer=kernel_initializer)
 
         self.conv_reg_2 = tf.keras.layers.Conv2D(filters=4 * 1,
@@ -217,14 +198,12 @@ class FaceBoxesHead(tf.keras.Model):
                                                  strides=1,
                                                  padding='same',
                                                  use_bias=True,
-                                                 kernel_regularizer=kernel_regularizer,
                                                  kernel_initializer=kernel_initializer)
         self.conv_cls_2 = tf.keras.layers.Conv2D(filters=2 * 1,
                                                  kernel_size=(3, 3),
                                                  strides=1,
                                                  padding='same',
                                                  use_bias=True,
-                                                 kernel_regularizer=kernel_regularizer,
                                                  kernel_initializer=kernel_initializer)
 
         self.conv_reg_3 = tf.keras.layers.Conv2D(filters=4 * 1,
@@ -232,14 +211,12 @@ class FaceBoxesHead(tf.keras.Model):
                                                  strides=1,
                                                  padding='same',
                                                  use_bias=True,
-                                                 kernel_regularizer=kernel_regularizer,
                                                  kernel_initializer=kernel_initializer)
         self.conv_cls_3 = tf.keras.layers.Conv2D(filters=2 * 1,
                                                  kernel_size=(3, 3),
                                                  strides=1,
                                                  padding='same',
                                                  use_bias=True,
-                                                 kernel_regularizer=kernel_regularizer,
                                                  kernel_initializer=kernel_initializer)
 
 
@@ -279,20 +256,15 @@ class FaceBoxesHead(tf.keras.Model):
 
 class FaceBoxes(tf.keras.Model):
     def __init__(self,
-                 kernel_regularizer=tf.keras.regularizers.l2(cfg.TRAIN.weight_decay_factor),
                  kernel_initializer='glorot_normal'):
         super(FaceBoxes, self).__init__()
 
-        self.RDCL=RDCL(kernel_regularizer=kernel_regularizer,
-                       kernel_initializer=kernel_initializer)
-        self.inception_blocks=[Inception(kernel_regularizer=kernel_regularizer,
-                                         kernel_initializer=kernel_initializer) for i in range(3)]
+        self.RDCL=RDCL(kernel_initializer=kernel_initializer)
+        self.inception_blocks=[Inception(kernel_initializer=kernel_initializer) for i in range(3)]
 
-        self.decrease_blocks=[DecreaseBlock(kernel_regularizer=kernel_regularizer,
-                                            kernel_initializer=kernel_initializer) for i in range(2)]
+        self.decrease_blocks=[DecreaseBlock(kernel_initializer=kernel_initializer) for i in range(2)]
 
-        self.head=FaceBoxesHead(kernel_regularizer=kernel_regularizer,
-                                kernel_initializer=kernel_initializer)
+        self.head=FaceBoxesHead(kernel_initializer=kernel_initializer)
 
 
     def call(self,images, training):

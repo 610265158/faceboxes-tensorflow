@@ -28,6 +28,8 @@ class Train(object):
   def __init__(self, epochs, enable_function, model, batch_size, strategy):
     self.epochs = epochs
     self.batch_size = batch_size
+    self.l2_regularization=cfg.TRAIN.weight_decay_factor
+    
     self.enable_function = enable_function
     self.strategy = strategy
 
@@ -69,12 +71,25 @@ class Train(object):
     if epoch >= self.lr_decay_every_epoch[4]:
       return self.lr_val_every_epoch[5]
 
-  def compute_loss(self,reg_target,matches, loc_predictions,cls_predictions):
+
+
+  def weight_decay_loss(self,):
+
+    regularization_loss=0.
+
+    for variable in self.model.trainable_variables:
+      if 'kernel' in variable.name:
+        regularization_loss+=tf.math.reduce_sum(tf.math.square(variable.numpy()))
+
+    return regularization_loss*self.l2_regularization*0.5
+
+
+  def compute_loss(self,reg_target,matches, loc_predictions,cls_predictions,training):
     loss = tf.reduce_sum(calculate_loss(reg_target,matches, loc_predictions,cls_predictions))
 
-
-    ## add l2
-    loss += (sum(self.model.losses) * 1. / self.strategy.num_replicas_in_sync)
+    if training:
+      ## add l2
+      loss += (self.weight_decay_loss() * 1. / self.strategy.num_replicas_in_sync)
     return loss
 
   def train_step(self, inputs):
@@ -88,7 +103,7 @@ class Train(object):
     with tf.GradientTape() as tape:
       loc_predictions,cls_predictions = self.model(image, training=True)
 
-      loss = self.compute_loss(reg_target,matches, loc_predictions,cls_predictions)
+      loss = self.compute_loss(reg_target,matches, loc_predictions,cls_predictions,True)
 
     gradients = tape.gradient(loss, self.model.trainable_variables)
     gradients = [(tf.clip_by_value(grad, -5.0, 5.0))
@@ -108,7 +123,7 @@ class Train(object):
 
     loc_predictions, cls_predictions = self.model(image, training=False)
 
-    unscaled_test_loss = self.compute_loss(reg_target, matches, loc_predictions, cls_predictions)
+    unscaled_test_loss = self.compute_loss(reg_target, matches, loc_predictions, cls_predictions,False)
 
     return unscaled_test_loss
 

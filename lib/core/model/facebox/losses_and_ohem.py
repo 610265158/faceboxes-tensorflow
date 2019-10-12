@@ -58,7 +58,6 @@ def ohem_loss(logits, targets, weights):
     fpmask = tf.cast(pmask, dtype)
     n_positives = tf.reduce_sum(fpmask)
 
-
     no_classes = tf.cast(pmask, tf.int32)
 
     predictions = tf.nn.softmax(logits)
