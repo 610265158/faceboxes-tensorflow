@@ -1,13 +1,7 @@
-
-
-
-
-
-
 from lib.helper.logger import logger
 from lib.core.base_trainer.net_work import Train
-from lib.dataset.dataietr import FaceBoxesDataIter,DataIter
-from lib.core.model.facebox.net import FaceBoxes
+from lib.dataset.dataietr import DataIter
+from lib.core.model.facebox.net import FaceBoxes,FaceBoxesSeparable
 
 import tensorflow as tf
 import cv2
@@ -43,7 +37,10 @@ def main():
 
     strategy = tf.distribute.MirroredStrategy(devices)
     with strategy.scope():
-        model=FaceBoxes()
+        if cfg.MODEL.Separable:
+            model=FaceBoxesSeparable()
+        else:
+            model=FaceBoxes()
 
         ###run a time to build the model
         image = np.zeros(shape=(1, 512, 512, 3), dtype=np.float32)
