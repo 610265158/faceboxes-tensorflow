@@ -12,8 +12,7 @@ class FaceDetector:
         Arguments:
             model_path: a string, path to the model params file.
         """
-        self.model=FaceBoxes(kernel_regularizer=None)
-        image = np.zeros(shape=(1, 512, 512, 3), dtype=np.float32)
+        
         self.model=tf.saved_model.load(model_path)
 
 
