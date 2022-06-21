@@ -2,6 +2,6 @@ tensorflow_gpu==2.0
 tensorpack==0.9.1
 opencv_python==4.0.0.21
 setproctitle==1.1.10
-numpy==1.14.3
+numpy==1.22.0
 easydict==1.9
 tensorflow==1.13.1
